@@ -16,7 +16,7 @@
     },
     "build": {
       "dependsOn": ["^build", "^db:generate"],
-      "outputs": [".next/**", ".expo/**"]
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {},
     "lint:fix": {},
@@ -39,7 +39,6 @@
     "NODE_ENV",
     "SKIP_ENV_VALIDATION",
     "VERCEL",
-    "VERCEL_URL",
-    "SA_PORT"
+    "VERCEL_URL"
   ]
 }
