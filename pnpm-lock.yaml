@@ -37,9 +37,6 @@ importers:
       '@craftyfoodz/db':
         specifier: ^0.1.0
         version: link:../../packages/db
-      '@craftyfoodz/superadmin-api':
-        specifier: ^0.1.0
-        version: link:../../packages/superadmin-api
       '@craftyfoodz/tailwind-config':
         specifier: ^0.1.0
         version: link:../../packages/config/tailwind

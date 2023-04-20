@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@craftyfoodz/db": "^0.1.0",
-    "@craftyfoodz/superadmin-api": "^0.1.0",
     "@craftyfoodz/tailwind-config": "^0.1.0",
     "@tanstack/react-query": "^4.29.2",
     "@trpc/client": "^10.20.0",

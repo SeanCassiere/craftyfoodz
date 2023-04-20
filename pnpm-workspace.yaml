@@ -1,5 +1,4 @@
 packages:
   - apps/superadmin-web
   - packages/db
-  - packages/superadmin-api
   - packages/config/*

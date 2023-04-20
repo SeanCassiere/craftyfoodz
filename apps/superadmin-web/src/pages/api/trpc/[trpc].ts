@@ -1,6 +1,6 @@
 import { createNextApiHandler } from "@trpc/server/adapters/next";
 
-import { appRouter, createTRPCContext } from "@craftyfoodz/superadmin-api";
+import { appRouter, createTRPCContext } from "~/server/trpc";
 
 // export API handler
 export default createNextApiHandler({

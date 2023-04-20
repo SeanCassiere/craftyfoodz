@@ -31,7 +31,7 @@ type CreateContextOptions = {
  * it, you can export it from here
  *
  * Examples of things you may need it for:
- * - testing, so we dont have to mock Next.js' req/res
+ * - testing, so we don't have to mock Next.js' req/res
  * - trpc's `createSSGHelpers` where we don't have req/res
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
@@ -86,13 +86,13 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  */
 
 /**
- * This is how you create new routers and subrouters in your tRPC API
+ * This is how you create new routers and sub-routers in your tRPC API
  * @see https://trpc.io/docs/router
  */
 export const createTRPCRouter = t.router;
 
 /**
- * Public (unauthed) procedure
+ * Public (un-authed) procedure
  *
  * This is the base piece you use to build new queries and mutations on your
  * tRPC API. It does not guarantee that a user querying is authorized, but you
@@ -105,13 +105,13 @@ export const publicProcedure = t.procedure;
  * procedure
  */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session?.user) {
+  if (!ctx.session) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
       // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      session: { ...ctx.session, user: { accountId: "abc123" } },
     },
   });
 });
