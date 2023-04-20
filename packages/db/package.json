@@ -14,7 +14,7 @@
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "db:push": "pnpm with-env drizzle-kit push:mysql",
-    "db:seed": "pnpm with-env seed.js",
+    "db:seed": "pnpm with-env node seed.js",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {

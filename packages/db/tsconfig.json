@@ -6,7 +6,6 @@
     "tables",
     "features.ts",
     "schema.ts",
-    "utils.ts",
-    "seed.ts"
+    "utils.ts"
   ]
 }
