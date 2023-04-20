@@ -46,3 +46,9 @@ yarn-error.log*
 
 # turbo
 .turbo
+
+# others
+packages/db/seed.js
+packages/db/index.js
+packages/db/utils.js
+packages/db/tables/*.js

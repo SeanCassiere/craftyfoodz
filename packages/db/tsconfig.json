@@ -1,4 +1,12 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["index.ts"]
+  "include": [
+    "index.ts",
+    "drizzle.config.ts",
+    "tables",
+    "features.ts",
+    "schema.ts",
+    "utils.ts",
+    "seed.ts"
+  ]
 }
