@@ -161,34 +161,6 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
 
-  packages/superadmin-api:
-    dependencies:
-      '@craftyfoodz/db':
-        specifier: ^0.1.0
-        version: link:../db
-      '@trpc/client':
-        specifier: ^10.20.0
-        version: 10.20.0(@trpc/server@10.20.0)
-      '@trpc/server':
-        specifier: ^10.20.0
-        version: 10.20.0
-      superjson:
-        specifier: 1.9.1
-        version: 1.9.1
-      zod:
-        specifier: ^3.21.4
-        version: 3.21.4
-    devDependencies:
-      '@craftyfoodz/eslint-config':
-        specifier: ^0.1.0
-        version: link:../config/eslint
-      eslint:
-        specifier: ^8.38.0
-        version: 8.38.0
-      typescript:
-        specifier: ^5.0.4
-        version: 5.0.4
-
 packages:
 
   /@ampproject/remapping@2.2.0:
