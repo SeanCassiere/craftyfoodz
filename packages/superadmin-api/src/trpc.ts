@@ -11,7 +11,6 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { getServerSession, type Session } from "@craftyfoodz/auth";
 import { prisma } from "@craftyfoodz/db";
 
 /**
@@ -24,7 +23,7 @@ import { prisma } from "@craftyfoodz/db";
  *
  */
 type CreateContextOptions = {
-  session: Session | null;
+  session: { accountId: string } | null;
 };
 
 /**
@@ -52,7 +51,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
 
   // Get the session from the server using the unstable_getServerSession wrapper function
-  const session = await getServerSession({ req, res });
+  const session = null;
 
   return createInnerTRPCContext({
     session,

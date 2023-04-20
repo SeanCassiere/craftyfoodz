@@ -10,8 +10,8 @@ const config = {
   /** Enables hot reloading for local packages without a build step */
   transpilePackages: [
     "@craftyfoodz/superadmin-api",
-    "@craftyfoodz/auth",
     "@craftyfoodz/db",
+    "@craftyfoodz/ui",
   ],
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: !!process.env.CI },
