@@ -1,8 +1,8 @@
 {
   "recommendations": [
+    "vivaxy.vscode-conventional-commits",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-    "bradlc.vscode-tailwindcss",
-    "Prisma.prisma"
+    "bradlc.vscode-tailwindcss"
   ]
 }
