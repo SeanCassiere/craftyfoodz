@@ -1,14 +1,14 @@
+import type { AppRouter } from "@/server/api/root";
 import { httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
+import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import superjson from "superjson";
-
-import type { AppRouter } from "@craftyfoodz/superadmin-api";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
 
-  return `http://localhost:3000`; // dev SSR should use localhost
+  return `http://localhost:3001`; // dev SSR should use localhost
 };
 
 export const api = createTRPCNext<AppRouter>({
@@ -30,7 +30,14 @@ export const api = createTRPCNext<AppRouter>({
   ssr: false,
 });
 
-export {
-  type RouterInputs,
-  type RouterOutputs,
-} from "@craftyfoodz/superadmin-api";
+/**
+ * Inference helpers for input types
+ * @example type HelloInput = RouterInputs['example']['hello']
+ **/
+export type RouterInputs = inferRouterInputs<AppRouter>;
+
+/**
+ * Inference helpers for output types
+ * @example type HelloOutput = RouterOutputs['example']['hello']
+ **/
+export type RouterOutputs = inferRouterOutputs<AppRouter>;

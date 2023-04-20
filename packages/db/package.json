@@ -4,19 +4,27 @@
   "main": "./index.ts",
   "types": "./index.ts",
   "license": "MIT",
+  "files": [
+    "index.ts",
+    "utils.ts",
+    "features.ts",
+    "schema.ts",
+    "tables"
+  ],
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "db:generate": "pnpm with-env prisma generate",
-    "db:push": "pnpm with-env prisma db push --skip-generate",
-    "dev": "pnpm with-env prisma studio --port 5556",
+    "db:push": "pnpm with-env drizzle-kit push:mysql",
+    "db:seed": "pnpm with-env node seed.js",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@prisma/client": "^4.12.0"
+    "@paralleldrive/cuid2": "^2.2.0",
+    "@planetscale/database": "^1.7.0",
+    "drizzle-orm": "^0.24.4"
   },
   "devDependencies": {
     "dotenv-cli": "^7.2.1",
-    "prisma": "^4.12.0",
+    "drizzle-kit": "0.17.1-609a4f0",
     "typescript": "^5.0.4"
   }
 }
