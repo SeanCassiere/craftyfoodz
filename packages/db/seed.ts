@@ -1,6 +1,6 @@
 import { getDatabaseConnection } from "./index";
-import { SuperAdminAccount } from "./tables/super-admin.js";
-import { generateDbId } from "./utils.js";
+import { SuperAdminAccount } from "./tables/super-admin";
+import { generateDbId } from "./utils";
 
 async function seedDatabase() {
   const connectionString = process.env.DATABASE_URL;
