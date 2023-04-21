@@ -14,7 +14,11 @@ import {
 import { generateJwt } from "@/lib/utils/jwt";
 import { AUTH_CONFIG } from "@/lib/config";
 import { wait } from "@/lib/utils";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import {
   ConfirmLoginAccessCodeZodSchema,
   EmailLoginZodSchema,
@@ -25,6 +29,23 @@ const ID_NO_USER = "no-user";
 export const authRouter = createTRPCRouter({
   getSession: publicProcedure.query(({ ctx }) => {
     return ctx.session;
+  }),
+  getUser: protectedProcedure.query(async ({ ctx }) => {
+    const { accountId } = ctx.session;
+
+    const users = await ctx.db
+      .select()
+      .from(SuperAdminAccount)
+      .where(Exps.eq(SuperAdminAccount.id, accountId));
+
+    if (users.length === 0 || !users[0]) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "User not found",
+      });
+    }
+
+    return users[0];
   }),
   login: publicProcedure
     .input(EmailLoginZodSchema)

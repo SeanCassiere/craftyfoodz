@@ -10,6 +10,8 @@ import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 
 import { api } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
@@ -128,6 +130,8 @@ const EmailAuthForm = ({
   onSuccess,
   ...props
 }: EmailAuthFormProps) => {
+  const { toast } = useToast();
+
   const {
     register,
     formState: { errors },
@@ -144,7 +148,10 @@ const EmailAuthForm = ({
       }
     },
     onError: (err) => {
-      alert(err.message);
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: err.message,
+      });
     },
   });
 
@@ -204,6 +211,8 @@ const AccessCodeAuthForm = ({
   identifierTag,
   ...props
 }: AccessCodeAuthFormProps) => {
+  const { toast } = useToast();
+
   const {
     register,
     formState: { errors },
@@ -218,7 +227,10 @@ const AccessCodeAuthForm = ({
       onSuccess();
     },
     onError: (err) => {
-      alert(err.message);
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: err.message,
+      });
     },
   });
 
