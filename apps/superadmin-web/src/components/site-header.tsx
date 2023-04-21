@@ -33,13 +33,13 @@ export const SiteHeader = ({ pathname }: { pathname: string }) => {
       <header className="relative mx-auto max-w-[1440px]">
         <div className="flex items-center pb-4 pt-4 md:pb-6 md:pt-6">
           <div className="mr-1 flex shrink-0 items-center">
-            <Link href="/" aria-label="Go to the base page">
+            <Link href="/restaurants" aria-label="Go to the restaurants page">
               <Command className="mr-2 h-8 w-8" />
             </Link>
           </div>
           <div className="flex flex-grow items-center">
             <Link
-              href="/"
+              href="/restaurants"
               className="hidden items-center rounded p-1 text-lg font-medium leading-3 transition sm:flex"
             >
               Admin - {UI_CONFIG.company_name}
