@@ -12,13 +12,15 @@ import {
 } from "@craftyfoodz/db/utils";
 
 import { generateJwt } from "@/lib/utils/jwt";
-import { AUTH_CONFIG } from "@/lib/config";
+import { env } from "@/env.mjs";
+import { AUTH_CONFIG, UI_CONFIG } from "@/lib/config";
 import { wait } from "@/lib/utils";
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
+import { sendEmail } from "@/server/email";
 import {
   ConfirmLoginAccessCodeZodSchema,
   EmailLoginZodSchema,
@@ -72,6 +74,23 @@ export const authRouter = createTRPCRouter({
         sa_account_id: user.id,
         access_code: accessCode,
       });
+
+      try {
+        await sendEmail({
+          to: [{ name: user.name, email: user.email }],
+          data: {
+            ACCESS_CODE: accessCode,
+            SUBJECT_LINE: `Admin login | ${UI_CONFIG.company_name}`,
+          },
+          templateId: env.SAP_SENDGRID_LOGIN_TEMP_ID,
+          subject: `Login to ${UI_CONFIG.company_name}`,
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Sending email failed",
+        });
+      }
 
       return { identifier: loginAttemptId };
     }),

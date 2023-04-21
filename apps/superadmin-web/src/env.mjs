@@ -15,6 +15,9 @@ const server = z.object({
     process.env.VERCEL ? z.string() : z.string().url(),
   ),
   SAP_SECRET: z.string().min(1),
+  SAP_SENDGRID_API_KEY: z.string().min(1),
+  SAP_SENDGRID_FROM_EMAIL: z.string(),
+  SAP_SENDGRID_LOGIN_TEMP_ID: z.string(),
 });
 
 /**
@@ -36,6 +39,9 @@ const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   SAP_PUBLIC_URL: process.env.SAP_PUBLIC_URL,
   SAP_SECRET: process.env.SAP_SECRET,
+  SAP_SENDGRID_API_KEY: process.env.SAP_SENDGRID_API_KEY,
+  SAP_SENDGRID_FROM_EMAIL: process.env.SAP_SENDGRID_FROM_EMAIL,
+  SAP_SENDGRID_LOGIN_TEMP_ID: process.env.SAP_SENDGRID_LOGIN_TEMP_ID,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
