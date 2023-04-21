@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { Icons } from "@/components/icons";
 import { ContentToContainer } from "@/components/layout/content-to-container";
 import { MainContainer } from "@/components/layout/main-container";
 import { SideNavigation } from "@/components/side-navigation";
@@ -162,7 +163,10 @@ const AccountNameForm = (props: FormProps) => {
           <span className="text-sm">Please use 32 characters at maximum.</span>
         </div>
         <div>
-          <Button type="submit" size="lg">
+          <Button type="submit" size="lg" disabled={mutation.isLoading}>
+            {mutation.isLoading && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Save
           </Button>
         </div>
@@ -238,7 +242,12 @@ const AccountEmailForm = (props: FormProps) => {
           </span>
         </div>
         <div>
-          <Button type="submit">Save</Button>
+          <Button type="submit" disabled={mutation.isLoading}>
+            {mutation.isLoading && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Save
+          </Button>
         </div>
       </div>
     </form>
