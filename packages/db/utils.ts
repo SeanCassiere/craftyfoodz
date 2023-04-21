@@ -14,3 +14,11 @@ export function generateDbId(prefix: string) {
 
   return `${prefix}_${cuid2()}`;
 }
+
+/**
+ * A helper function to generate a six-digit access code
+ * @returns A six-digit access code string
+ */
+export function generateSixDigitAccessCode() {
+  return `${Math.floor(100000 + Math.random() * 900000)}`;
+}
