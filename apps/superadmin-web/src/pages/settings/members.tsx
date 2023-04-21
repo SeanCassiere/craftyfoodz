@@ -77,7 +77,7 @@ const MembersSettingsPage: NextPage = () => {
         <SiteHeader pathname={router.pathname} />
         <ContentToContainer>
           <div className="grid grid-cols-12">
-            <div className="col-span-12 py-4 md:col-span-2 md:px-2">
+            <div className="col-span-12 py-4 md:col-span-3 md:px-2">
               <SideNavigation title="Settings">
                 <SideNavigation.Item
                   href="/settings/account"
@@ -93,7 +93,7 @@ const MembersSettingsPage: NextPage = () => {
                 </SideNavigation.Item>
               </SideNavigation>
             </div>
-            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-4">
+            <div className="col-span-12 pb-4 pt-6 md:col-span-9 md:pt-4">
               <div className="mb-4 flex items-center justify-between md:items-start">
                 <h2 className="text-lg font-medium leading-3 transition sm:flex">
                   Members

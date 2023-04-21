@@ -46,7 +46,7 @@ const OverviewSettingsPage: NextPage = () => {
         <SiteHeader pathname={router.pathname} />
         <ContentToContainer>
           <div className="grid grid-cols-12">
-            <div className="col-span-12 py-4 md:col-span-2 md:px-2">
+            <div className="col-span-12 py-4 md:col-span-3 md:px-2">
               <SideNavigation title="Settings">
                 <SideNavigation.Item
                   href="/settings/account"
@@ -62,7 +62,7 @@ const OverviewSettingsPage: NextPage = () => {
                 </SideNavigation.Item>
               </SideNavigation>
             </div>
-            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-4">
+            <div className="col-span-12 pb-4 pt-6 md:col-span-9 md:pt-4">
               <h2 className="mb-4 text-lg font-medium leading-3 transition sm:flex">
                 Account
               </h2>
@@ -183,10 +183,13 @@ const AccountEmailForm = (props: FormProps) => {
     register,
     formState: { errors },
     handleSubmit,
+    watch,
   } = useForm<UpdateUserEmailZodSchemaType>({
     resolver: zodResolver(UpdateUserEmailZodSchema),
     defaultValues: { email: props.user?.email },
   });
+
+  const emailValue = watch("email");
 
   const mutation = api.auth.updateEmail.useMutation({
     onSuccess: () => {
@@ -242,7 +245,13 @@ const AccountEmailForm = (props: FormProps) => {
           </span>
         </div>
         <div>
-          <Button type="submit" disabled={mutation.isLoading}>
+          <Button
+            type="submit"
+            disabled={
+              emailValue.toLowerCase() === props.user?.email ||
+              mutation.isLoading
+            }
+          >
             {mutation.isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}

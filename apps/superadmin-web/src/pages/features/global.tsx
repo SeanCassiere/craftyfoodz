@@ -21,7 +21,7 @@ const GlobalFeaturesPage: NextPage = () => {
         <SiteHeader pathname={router.pathname} />
         <ContentToContainer>
           <div className="grid grid-cols-12">
-            <div className="col-span-12 py-4 md:col-span-2 md:px-2">
+            <div className="col-span-12 py-4 md:col-span-3 md:px-2">
               <SideNavigation title="Features">
                 <SideNavigation.Item
                   href="/features/global"
@@ -37,7 +37,7 @@ const GlobalFeaturesPage: NextPage = () => {
                 </SideNavigation.Item>
               </SideNavigation>
             </div>
-            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-4">
+            <div className="col-span-12 pb-4 pt-6 md:col-span-9 md:pt-4">
               <h2 className="mb-4 text-lg font-medium leading-3 transition sm:flex">
                 Global
               </h2>
