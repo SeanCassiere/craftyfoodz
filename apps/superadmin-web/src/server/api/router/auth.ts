@@ -111,6 +111,13 @@ export const authRouter = createTRPCRouter({
 
       const user = users[0];
 
+      if (!user.is_active) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Account is locked. Please contact support.",
+        });
+      }
+
       const accessCode = generateSixDigitAccessCode();
 
       const loginAttemptId = generateDbId("sala");
