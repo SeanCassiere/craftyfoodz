@@ -25,6 +25,10 @@ import {
   ConfirmLoginAccessCodeZodSchema,
   EmailLoginZodSchema,
 } from "@/server/validation/auth";
+import {
+  UpdateUserEmailZodSchema,
+  UpdateUserNameZodSchema,
+} from "@/server/validation/user";
 
 const ID_NO_USER = "no-user";
 
@@ -49,6 +53,47 @@ export const authRouter = createTRPCRouter({
 
     return users[0];
   }),
+  updateName: protectedProcedure
+    .input(UpdateUserNameZodSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { accountId } = ctx.session;
+
+      await ctx.db
+        .update(SuperAdminAccount)
+        .set({ name: input.name })
+        .where(Exps.eq(SuperAdminAccount.id, accountId));
+
+      return { id: accountId, name: input.name };
+    }),
+  updateEmail: protectedProcedure
+    .input(UpdateUserEmailZodSchema)
+    .mutation(async ({ ctx, input }) => {
+      const existingEmails = await ctx.db
+        .select()
+        .from(SuperAdminAccount)
+        .where(Exps.eq(SuperAdminAccount.email, input.email.toLowerCase()));
+
+      if (existingEmails.length > 0 && existingEmails[0]) {
+        if (existingEmails[0]) {
+          const account = existingEmails[0];
+          return { id: account.id, email: account.email.toLowerCase() };
+        } else {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Email already exists. Please use a different email.",
+          });
+        }
+      }
+
+      const { accountId } = ctx.session;
+
+      await ctx.db
+        .update(SuperAdminAccount)
+        .set({ email: input.email.toLowerCase() })
+        .where(Exps.eq(SuperAdminAccount.id, accountId));
+
+      return { id: accountId, email: input.email.toLowerCase() };
+    }),
   login: publicProcedure
     .input(EmailLoginZodSchema)
     .mutation(async ({ ctx, input }) => {

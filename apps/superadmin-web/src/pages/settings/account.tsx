@@ -1,16 +1,40 @@
+import { useId } from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 import { ContentToContainer } from "@/components/layout/content-to-container";
 import { MainContainer } from "@/components/layout/main-container";
 import { SideNavigation } from "@/components/side-navigation";
 import { SiteHeader } from "@/components/site-header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 
+import { api, type RouterOutputs } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
+import {
+  UpdateUserEmailZodSchema,
+  UpdateUserNameZodSchema,
+  type UpdateUserEmailZodSchemaType,
+  type UpdateUserNameZodSchemaType,
+} from "@/server/validation/user";
+
+type UserProfile = RouterOutputs["auth"]["getUser"];
 
 const OverviewSettingsPage: NextPage = () => {
   const router = useRouter();
+
+  const userQuery = api.auth.getUser.useQuery();
+
+  const apiCtx = api.useContext();
+
+  const refreshDetails = () => {
+    apiCtx.auth.getUser.invalidate();
+  };
   return (
     <>
       <Head>
@@ -37,8 +61,27 @@ const OverviewSettingsPage: NextPage = () => {
                 </SideNavigation.Item>
               </SideNavigation>
             </div>
-            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-12">
-              Account
+            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-4">
+              <h2 className="mb-4 text-lg font-medium leading-3 transition sm:flex">
+                Account
+              </h2>
+              <p className="mb-6 text-sm">
+                Settings and options for your account.
+              </p>
+              <div className="flex flex-col gap-4">
+                {userQuery.status === "success" && (
+                  <AccountNameForm
+                    user={userQuery.data ?? null}
+                    onSuccess={refreshDetails}
+                  />
+                )}
+                {userQuery.status === "success" && (
+                  <AccountEmailForm
+                    user={userQuery.data ?? null}
+                    onSuccess={refreshDetails}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </ContentToContainer>
@@ -48,3 +91,156 @@ const OverviewSettingsPage: NextPage = () => {
 };
 
 export default OverviewSettingsPage;
+
+interface FormProps {
+  user: UserProfile | null;
+  onSuccess: () => void;
+}
+
+const AccountNameForm = (props: FormProps) => {
+  const id = useId();
+  const { toast } = useToast();
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<UpdateUserNameZodSchemaType>({
+    resolver: zodResolver(UpdateUserNameZodSchema),
+    defaultValues: { name: props.user?.name },
+  });
+
+  const mutation = api.auth.updateName.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Updated successfully!",
+        description: "Your name was updated",
+      });
+      props.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: err.message,
+      });
+    },
+  });
+
+  return (
+    <form
+      className="rounded border"
+      onSubmit={handleSubmit((values) => {
+        mutation.mutate(values);
+      })}
+    >
+      <div className="px-4 py-4">
+        <h4 className="pb-1 font-medium">Your name</h4>
+        <p className="pb-4 text-sm">
+          Please enter your full name, or a display name you are comfortable
+          with.
+        </p>
+        <div className="pb-2 md:max-w-[400px]">
+          <Label className="sr-only" htmlFor={id}>
+            Name
+          </Label>
+          <Input
+            id={id}
+            type="text"
+            placeholder="Your name"
+            {...register("name")}
+          />
+          {errors.name && (
+            <span className="pt-6 text-sm text-red-500">
+              {errors.name.message}
+            </span>
+          )}
+        </div>
+      </div>
+      <hr />
+      <div className="flex flex-col justify-between gap-2 bg-gray-100 px-4 py-4 md:flex-row md:items-center">
+        <div>
+          <span className="text-sm">Please use 32 characters at maximum.</span>
+        </div>
+        <div>
+          <Button type="submit" size="lg">
+            Save
+          </Button>
+        </div>
+      </div>
+    </form>
+  );
+};
+
+const AccountEmailForm = (props: FormProps) => {
+  const id = useId();
+  const { toast } = useToast();
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<UpdateUserEmailZodSchemaType>({
+    resolver: zodResolver(UpdateUserEmailZodSchema),
+    defaultValues: { email: props.user?.email },
+  });
+
+  const mutation = api.auth.updateEmail.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Updated successfully!",
+        description: "Your email was updated",
+      });
+      props.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: err.message,
+      });
+    },
+  });
+
+  return (
+    <form
+      className="rounded border"
+      onSubmit={handleSubmit((values) => {
+        mutation.mutate(values);
+      })}
+    >
+      <div className="px-4 py-4">
+        <h4 className="pb-1 font-medium">Your email</h4>
+        <p className="pb-4 text-sm">
+          Please enter the email address you want to use to log in to{" "}
+          {UI_CONFIG.company_name} admin.
+        </p>
+        <div className="pb-2 md:max-w-[400px]">
+          <Label className="sr-only" htmlFor={id}>
+            Email
+          </Label>
+          <Input
+            id={id}
+            type="email"
+            placeholder="Your email"
+            {...register("email")}
+          />
+          {errors.email && (
+            <span className="pt-6 text-sm text-red-500">
+              {errors.email.message}
+            </span>
+          )}
+        </div>
+      </div>
+      <hr />
+      <div className="flex flex-col justify-between gap-2 bg-gray-100 px-4 py-4 md:flex-row md:items-center">
+        <div>
+          <span className="text-sm">
+            Your email must be unique and cannot be in-use by another user.
+          </span>
+        </div>
+        <div>
+          <Button type="submit">Save</Button>
+        </div>
+      </div>
+    </form>
+  );
+};

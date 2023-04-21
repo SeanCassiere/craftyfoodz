@@ -37,8 +37,14 @@ const MembersSettingsPage: NextPage = () => {
                 </SideNavigation.Item>
               </SideNavigation>
             </div>
-            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-12">
-              Members
+            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-4">
+              <h2 className="mb-4 text-lg font-medium leading-3 transition sm:flex">
+                Members
+              </h2>
+              <p className="mb-6 text-sm">
+                System administrators are able to create and manage restaurants.
+              </p>
+              <section></section>
             </div>
           </div>
         </ContentToContainer>
