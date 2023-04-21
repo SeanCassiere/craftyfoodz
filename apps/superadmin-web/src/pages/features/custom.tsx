@@ -37,8 +37,17 @@ const CustomFeaturesPage: NextPage = () => {
                 </SideNavigation.Item>
               </SideNavigation>
             </div>
-            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-12">
-              Custom
+            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-4">
+              <h2 className="mb-4 text-lg font-medium leading-3 transition sm:flex">
+                Custom
+              </h2>
+              <p className="mb-6 text-sm">
+                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Alias
+                cumque saepe, excepturi praesentium quis animi recusandae aut
+                architecto dolor ut aperiam voluptatibus libero iste vero,
+                accusantium dolorem dignissimos atque quasi?
+              </p>
+              <section></section>
             </div>
           </div>
         </ContentToContainer>

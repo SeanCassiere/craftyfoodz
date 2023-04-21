@@ -1,16 +1,72 @@
+import React, { useId } from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
+import { Icons } from "@/components/icons";
 import { ContentToContainer } from "@/components/layout/content-to-container";
 import { MainContainer } from "@/components/layout/main-container";
 import { SideNavigation } from "@/components/side-navigation";
 import { SiteHeader } from "@/components/site-header";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 
+import { api, type RouterOutputs } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
+import { fontSans } from "@/lib/fonts";
+import { cn, makeProfileImageUrl } from "@/lib/utils";
+import {
+  CreateUserZodSchema,
+  UpdateUserInfoZodSchema,
+  type CreateUserZodSchemaType,
+  type UpdateUserInfoZodSchemaType,
+} from "@/server/validation/user";
+
+type UserList = RouterOutputs["users"]["getAll"];
 
 const MembersSettingsPage: NextPage = () => {
   const router = useRouter();
+  const userQuery = api.auth.getUser.useQuery();
+  const members = api.users.getAll.useQuery();
+
+  const accountId = userQuery.data?.id || "";
+  const isSuperAdmin = userQuery.data?.role === "super_admin";
+
+  const adminMembers = (members.data || []).filter((u) => u.role === "admin");
+  const superAdminMembers = (members.data || []).filter(
+    (u) => u.role === "super_admin",
+  );
+
   return (
     <>
       <Head>
@@ -37,8 +93,40 @@ const MembersSettingsPage: NextPage = () => {
                 </SideNavigation.Item>
               </SideNavigation>
             </div>
-            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-12">
-              Members
+            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-4">
+              <div className="mb-4 flex items-center justify-between md:items-start">
+                <h2 className="text-lg font-medium leading-3 transition sm:flex">
+                  Members
+                </h2>
+                <div>
+                  <CreateMemberForm
+                    isSuperAdmin={isSuperAdmin}
+                    onSuccess={members.refetch}
+                  />
+                </div>
+              </div>
+              <p className="mb-6 text-sm">
+                System administrators are able to create and manage restaurants.
+              </p>
+              <div className="flex flex-col gap-6">
+                <MemberList
+                  title="Administrators"
+                  members={adminMembers}
+                  accountId={accountId}
+                  onSuccess={members.refetch}
+                  isSuperAdmin={isSuperAdmin}
+                />
+
+                {isSuperAdmin && (
+                  <MemberList
+                    title="Super Administrators"
+                    members={superAdminMembers}
+                    accountId={accountId}
+                    onSuccess={members.refetch}
+                    isSuperAdmin={isSuperAdmin}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </ContentToContainer>
@@ -48,3 +136,402 @@ const MembersSettingsPage: NextPage = () => {
 };
 
 export default MembersSettingsPage;
+
+type MemberListProps = {
+  members: UserList;
+  accountId: string;
+  title: string;
+  onSuccess: () => {};
+  isSuperAdmin: boolean;
+};
+
+const MemberList = (props: MemberListProps) => {
+  return (
+    <section>
+      <h4 className="w-full select-none rounded border bg-gray-100 p-2 text-sm">
+        {props.title}
+      </h4>
+      <div className="flex flex-col divide-y px-1">
+        {props.members.map((mem) => (
+          <MemberItem key={`member_${mem.id}`} member={mem} {...props} />
+        ))}
+        {props.members.length === 0 && (
+          <div className="flex items-center justify-center p-2">
+            <span className="text-sm">No members</span>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+const MemberItem = (
+  props: Omit<MemberListProps, "title" | "members"> & {
+    member: UserList[number];
+  },
+) => {
+  const { toast } = useToast();
+
+  const [open, setOpen] = React.useState(false);
+  const emailId = useId();
+  const nameId = useId();
+  const selectId = useId();
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    setValue,
+    watch,
+  } = useForm<UpdateUserInfoZodSchemaType>({
+    resolver: zodResolver(UpdateUserInfoZodSchema),
+    defaultValues: {
+      id: props.member.id,
+      name: props.member.name,
+      email: props.member.email,
+      role: props.member.role,
+    },
+  });
+
+  const roleValue = watch("role");
+
+  const mutation = api.users.update.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Updated successfully!",
+        description: "Account updated",
+      });
+      setOpen(false);
+      props.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: err.message,
+      });
+    },
+  });
+
+  const onSubmit = handleSubmit((data) => {
+    mutation.mutate(data);
+  });
+
+  const toggleLock = api.users.toggleLock.useMutation({
+    onSuccess: (data) => {
+      toast({
+        title: data.is_active ? "Unlocked" : "Locked",
+      });
+      props.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: err.message,
+      });
+    },
+  });
+
+  const handleToggleLock = () => {
+    toggleLock.mutate({
+      id: props.member.id,
+      currentStatus:
+        props.member.is_active === null ? false : props.member.is_active,
+    });
+  };
+
+  return (
+    <div className="flex items-center gap-4 p-2">
+      <div>
+        <Avatar className="h-8 w-8">
+          <AvatarImage
+            src={makeProfileImageUrl(props.member.name)}
+            alt={props.member.name}
+          />
+          <AvatarFallback>{props.member.name.slice(0, 1)}</AvatarFallback>
+        </Avatar>
+      </div>
+      <div className="flex flex-grow flex-col">
+        <span className="flex items-center text-sm">
+          {props.member.name}
+          {props.member.is_active === false && (
+            <>
+              &nbsp;
+              <Icons.lock className="h-3 w-3" />
+            </>
+          )}
+        </span>
+        <span className="text-xs">{props.member.email}</span>
+      </div>
+      <div>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost">
+                <Icons.ellipsis className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className={cn("font-sans", fontSans.variable)}
+              align="end"
+              forceMount
+            >
+              <DropdownMenuGroup>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem
+                    disabled={props.member.id === props.accountId}
+                  >
+                    <Icons.pencil className="mr-2 h-4 w-4" />
+                    Edit
+                  </DropdownMenuItem>
+                </DialogTrigger>
+                <DropdownMenuItem
+                  disabled={props.member.id === props.accountId}
+                  onClick={handleToggleLock}
+                >
+                  {props.member.is_active ? (
+                    <Icons.lock className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Icons.unlock className="mr-2 h-4 w-4" />
+                  )}
+                  {props.member.is_active ? "Lock account" : "Unlock account"}
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DialogContent
+            className={cn("font-sans sm:max-w-[475px]", fontSans.variable)}
+          >
+            <DialogHeader>
+              <DialogTitle>Edit account</DialogTitle>
+              <DialogDescription>
+                Make changes to the account here. Click save when you are done.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor={nameId} className="text-right">
+                  Name
+                </Label>
+                <div className="col-span-3">
+                  <Input id={nameId} {...register("name")} />
+                  {errors.name && (
+                    <p className="mb-2 text-sm text-red-500">
+                      {errors.name.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor={emailId} className="text-right">
+                  Email
+                </Label>
+                <div className="col-span-3">
+                  <Input id={emailId} {...register("email")} />
+                  {errors.email && (
+                    <p className="mb-2 text-sm text-red-500">
+                      {errors.email.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {props.isSuperAdmin && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor={selectId} className="text-right">
+                    Role
+                  </Label>
+                  <span className="col-span-3">
+                    <Select
+                      value={roleValue}
+                      onValueChange={(value) => {
+                        if (value === "admin" || value === "super_admin") {
+                          setValue("role", value);
+                        }
+                      }}
+                    >
+                      <SelectTrigger id={selectId} className="col-span-3">
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                      <SelectContent
+                        className={cn("font-sans", fontSans.variable)}
+                      >
+                        <SelectGroup>
+                          <SelectLabel>Roles</SelectLabel>
+                          <SelectItem value="admin">Administrator</SelectItem>
+                          <SelectItem value="super_admin">
+                            Super administrator
+                          </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    {errors.role && (
+                      <p className="mb-2 text-sm text-red-500">
+                        {errors.role.message}
+                      </p>
+                    )}
+                  </span>
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                onClick={onSubmit}
+                disabled={mutation.isLoading}
+              >
+                {mutation.isLoading && (
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Save changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </div>
+  );
+};
+
+type CreateMemberFormProps = {
+  onSuccess: () => {};
+  isSuperAdmin: boolean;
+};
+
+const CreateMemberForm = (props: CreateMemberFormProps) => {
+  const { toast } = useToast();
+
+  const [open, setOpen] = React.useState(false);
+  const nameId = useId();
+  const emailId = useId();
+  const selectId = useId();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<CreateUserZodSchemaType>({
+    resolver: zodResolver(CreateUserZodSchema),
+    defaultValues: { email: "", name: "", role: "admin" },
+  });
+
+  const roleValue = watch("role");
+
+  const mutation = api.users.create.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Created successfully!",
+        description: "Account added",
+      });
+      setOpen(false);
+      props.onSuccess();
+    },
+    onError: (err) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: err.message,
+      });
+    },
+  });
+
+  const onSubmit = handleSubmit((data) => {
+    mutation.mutate(data);
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm">Add member</Button>
+      </DialogTrigger>
+      <DialogContent
+        className={cn("font-sans sm:max-w-[475px]", fontSans.variable)}
+      >
+        <DialogHeader>
+          <DialogTitle>New account</DialogTitle>
+          <DialogDescription>
+            Add the information for the new account here. Click save when you
+            are done.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor={nameId} className="text-right">
+              Name
+            </Label>
+            <div className="col-span-3">
+              <Input id={nameId} {...register("name")} />
+              {errors.name && (
+                <p className="mb-2 text-sm text-red-500">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor={emailId} className="text-right">
+              Email
+            </Label>
+            <div className="col-span-3">
+              <Input id={emailId} {...register("email")} />
+              {errors.email && (
+                <p className="mb-2 text-sm text-red-500">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {props.isSuperAdmin && (
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor={selectId} className="text-right">
+                Role
+              </Label>
+              <div className="col-span-3">
+                <Select
+                  value={roleValue}
+                  onValueChange={(value) => {
+                    if (value === "admin" || value === "super_admin") {
+                      setValue("role", value);
+                    }
+                  }}
+                >
+                  <SelectTrigger id={selectId}>
+                    <SelectValue placeholder="Select a role" />
+                  </SelectTrigger>
+                  <SelectContent className={cn("font-sans", fontSans.variable)}>
+                    <SelectGroup>
+                      <SelectLabel>Roles</SelectLabel>
+                      <SelectItem value="admin">Administrator</SelectItem>
+                      <SelectItem value="super_admin">
+                        Super administrator
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {errors.role && (
+                  <p className="mb-2 text-sm text-red-500">
+                    {errors.role.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            onClick={onSubmit}
+            disabled={mutation.isLoading}
+          >
+            {mutation.isLoading && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Save changes
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};

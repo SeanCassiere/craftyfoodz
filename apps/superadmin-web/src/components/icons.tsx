@@ -13,14 +13,17 @@ import {
   Image,
   Laptop,
   Loader2,
+  Lock,
   Moon,
   MoreVertical,
+  Pencil,
   Pizza,
   Plus,
   Settings,
   SunMedium,
   Trash,
   Twitter,
+  Unlock,
   User,
   X,
   type Icon as LucideIcon,
@@ -67,6 +70,9 @@ export const Icons = {
   sun: SunMedium,
   moon: Moon,
   laptop: Laptop,
+  lock: Lock,
+  unlock: Unlock,
+  pencil: Pencil,
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path

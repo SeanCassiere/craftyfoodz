@@ -37,8 +37,17 @@ const GlobalFeaturesPage: NextPage = () => {
                 </SideNavigation.Item>
               </SideNavigation>
             </div>
-            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-12">
-              Global
+            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-4">
+              <h2 className="mb-4 text-lg font-medium leading-3 transition sm:flex">
+                Global
+              </h2>
+              <p className="mb-6 text-sm">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Est
+                consequatur dolorum veritatis aliquam esse tempore velit
+                sapiente recusandae architecto! Numquam similique ea vel impedit
+                nam nihil? Perferendis nobis pariatur quas.
+              </p>
+              <section></section>
             </div>
           </div>
         </ContentToContainer>

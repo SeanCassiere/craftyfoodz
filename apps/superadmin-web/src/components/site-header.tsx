@@ -5,7 +5,7 @@ import { Command } from "lucide-react";
 import { api } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
 import { fontSans } from "@/lib/fonts";
-import { cn } from "@/lib/utils";
+import { cn, makeProfileImageUrl } from "@/lib/utils";
 import { UserAvatarNavigation } from "./user-avatar-navigation";
 
 export const SiteHeader = ({ pathname }: { pathname: string }) => {
@@ -47,7 +47,7 @@ export const SiteHeader = ({ pathname }: { pathname: string }) => {
           </div>
           <div className="flex flex-none items-center">
             <UserAvatarNavigation
-              avatarImageUrl={`https://api.dicebear.com/6.x/fun-emoji/svg?seed=${userQuery.data?.name}`}
+              avatarImageUrl={makeProfileImageUrl(userQuery.data?.name || "")}
               avatarFallback={"UA"}
               name={userQuery.data?.name || ""}
               email={userQuery.data?.email || ""}
