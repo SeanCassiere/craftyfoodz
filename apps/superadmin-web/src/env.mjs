@@ -14,6 +14,7 @@ const server = z.object({
     // VERCEL_URL doesn't include `https` so it cant be validated as a URL
     process.env.VERCEL ? z.string() : z.string().url(),
   ),
+  SAP_SECRET: z.string().min(1),
 });
 
 /**
@@ -34,6 +35,7 @@ const processEnv = {
   DATABASE_URL: process.env.DATABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
   SAP_PUBLIC_URL: process.env.SAP_PUBLIC_URL,
+  SAP_SECRET: process.env.SAP_SECRET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

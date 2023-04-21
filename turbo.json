@@ -38,6 +38,7 @@
     "SKIP_ENV_VALIDATION",
     "VERCEL",
     "VERCEL_URL",
-    "SAP_PUBLIC_URL"
+    "SAP_PUBLIC_URL",
+    "SAP_SECRET"
   ]
 }

@@ -7,6 +7,7 @@ const publicPaths = [
   "/settings*",
   "/sign-in*",
   "/api/trpc*",
+  "/api/trpc-panel*",
 ];
 
 const isAuthed = (_: NextRequest) => {

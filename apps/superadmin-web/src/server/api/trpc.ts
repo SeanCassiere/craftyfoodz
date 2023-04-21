@@ -1,4 +1,4 @@
-import { env } from "@/env.mjs";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
@@ -6,14 +6,20 @@ import { ZodError } from "zod";
 
 import { getDatabaseConnection } from "@craftyfoodz/db";
 
+import { env } from "@/env.mjs";
+
 type CreateContextOptions = {
   session: { accountId: string } | null;
+  req: NextApiRequest;
+  res: NextApiResponse;
 };
 
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     db: getDatabaseConnection({ connectionString: env.DATABASE_URL }),
+    res: opts.res,
+    req: opts.req,
   };
 };
 
@@ -24,6 +30,8 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 
   return createInnerTRPCContext({
     session,
+    req,
+    res,
   });
 };
 
@@ -47,6 +55,7 @@ const trpcAuthMiddleware = t.middleware(({ ctx, next }) => {
   }
   return next({
     ctx: {
+      ...ctx,
       // infers the `session` as non-nullable
       session: { ...ctx.session, user: { accountId: "abc123" } },
     },
