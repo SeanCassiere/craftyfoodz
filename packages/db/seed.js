@@ -8,9 +8,13 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is not set");
 }
 
-const id = "saua_648294274326";
-const email = "noreply@pingstash.com";
-const name = "Admin";
+const users = [
+  {
+    id: "saua_900000000001",
+    email: "noreply@pingstash.com",
+    name: "PingStash",
+  },
+];
 
 async function seed() {
   const { connect } = await planetscaleImport;
@@ -20,13 +24,20 @@ async function seed() {
 
   const start = new Date();
 
-  const query = await db.execute(
-    sql`insert into super_admin_accounts (id, email, name, role) values ("${id}", "${email}", "${name}", "super_admin")`,
-  );
-  // const query = await db.execute(
-  //   sql`delete from super_admin_accounts where id="${id}"`,
-  // );
-  console.log("result", query?.rows);
+  // create and seed super-admins
+  for (const user of users) {
+    await db.execute(
+      sql`insert into sa_accounts (id, email, name, role) values ("${user.id}", "${user.email}", "${user.name}", "super_admin")`,
+    );
+  }
+
+  // delete all seeded super-admins
+  // for (const user of users) {
+  //   await db.execute(sql`delete from sa_accounts where id="${user.id}"`);
+  // }
+
+  const accounts = await db.execute(sql`select * from sa_accounts`);
+  console.log("accounts", accounts?.rows);
 
   const end = new Date();
 
