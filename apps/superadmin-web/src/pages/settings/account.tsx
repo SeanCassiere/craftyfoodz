@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useEffect, useId, useState } from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -17,6 +17,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 import { api, type RouterOutputs } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
+import { copyToClipboard } from "@/lib/utils";
 import {
   UpdateUserEmailZodSchema,
   UpdateUserNameZodSchema,
@@ -78,6 +79,12 @@ const OverviewSettingsPage: NextPage = () => {
                 )}
                 {userQuery.status === "success" && (
                   <AccountEmailForm
+                    user={userQuery.data ?? null}
+                    onSuccess={refreshDetails}
+                  />
+                )}
+                {userQuery.status === "success" && (
+                  <AccountIdSection
                     user={userQuery.data ?? null}
                     onSuccess={refreshDetails}
                   />
@@ -260,5 +267,53 @@ const AccountEmailForm = (props: FormProps) => {
         </div>
       </div>
     </form>
+  );
+};
+
+const AccountIdSection = (props: FormProps) => {
+  const [hasCopied, setHasCopied] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setHasCopied(false);
+    }, 3000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  return (
+    <section className="rounded border">
+      <div className="px-4 py-4">
+        <h4 className="pb-1 font-medium">Your ID</h4>
+        <p className="pb-4 text-sm">
+          This is your user ID within {UI_CONFIG.company_name} admin.
+        </p>
+        <div className="flex w-full items-center justify-between rounded-md border pl-4 md:max-w-[400px]">
+          <span className="text-sm">{props.user?.id}</span>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              copyToClipboard(props.user?.id ?? "").then(() => {
+                setHasCopied(true);
+              });
+            }}
+          >
+            {hasCopied ? (
+              <Icons.check className="h-3 w-3" />
+            ) : (
+              <Icons.copy className="h-3 w-3" />
+            )}
+          </Button>
+        </div>
+      </div>
+      <hr />
+      <div className="bg-gray-100 px-4 py-4">
+        <span className="text-sm">
+          Used when interacting with the {UI_CONFIG.company_name} admin panel.
+        </span>
+      </div>
+    </section>
   );
 };
