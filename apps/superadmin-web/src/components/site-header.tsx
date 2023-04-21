@@ -2,21 +2,24 @@ import React, { type ReactNode } from "react";
 import Link from "next/link";
 import { Command } from "lucide-react";
 
+import { api } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
 import { fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { UserAvatarNavigation } from "./user-avatar-navigation";
 
 export const SiteHeader = ({ pathname }: { pathname: string }) => {
-  const isSuperAdmin = true;
+  const userQuery = api.auth.getUser.useQuery();
 
-  const isFeaturesPage = (() => {
+  const isSuperAdmin = userQuery.data?.role === "super_admin";
+
+  const onFeaturesTab = (() => {
     return pathname.toLowerCase().startsWith("/features");
   })();
-  const isRestaurantsPage = (() => {
+  const osRestaurantsTab = (() => {
     return pathname.toLowerCase().startsWith("/restaurants");
   })();
-  const isSettingsPage = (() => {
+  const onSettingsTab = (() => {
     return pathname.toLowerCase().startsWith("/settings");
   })();
 
@@ -44,29 +47,27 @@ export const SiteHeader = ({ pathname }: { pathname: string }) => {
           </div>
           <div className="flex flex-none items-center">
             <UserAvatarNavigation
-              avatarImageUrl={
-                "https://api.dicebear.com/6.x/fun-emoji/svg?seed=Sean"
-              }
-              avatarFallback={"SC"}
-              name={"Sean Cassiere"}
-              email={"sean.cassiere@gmail.com"}
+              avatarImageUrl={`https://api.dicebear.com/6.x/fun-emoji/svg?seed=${userQuery.data?.name}`}
+              avatarFallback={"UA"}
+              name={userQuery.data?.name || ""}
+              email={userQuery.data?.email || ""}
             />
           </div>
         </div>
         <div className="-mb-px flex space-x-4 overflow-x-auto sm:space-x-0">
-          <NavLink href="/restaurants" active={isRestaurantsPage}>
+          <NavLink href="/restaurants" active={osRestaurantsTab}>
             Restaurants
           </NavLink>
 
           {isSuperAdmin && (
             <>
-              <NavLink href="/features" active={isFeaturesPage}>
+              <NavLink href="/features" active={onFeaturesTab}>
                 Features
               </NavLink>
             </>
           )}
 
-          <NavLink href="/settings" active={isSettingsPage}>
+          <NavLink href="/settings" active={onSettingsTab}>
             Settings
           </NavLink>
         </div>
