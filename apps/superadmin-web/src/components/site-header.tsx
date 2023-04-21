@@ -2,13 +2,16 @@ import React, { type ReactNode } from "react";
 import Link from "next/link";
 import { Command } from "lucide-react";
 
+import { api } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
 import { fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { UserAvatarNavigation } from "./user-avatar-navigation";
 
 export const SiteHeader = ({ pathname }: { pathname: string }) => {
-  const isSuperAdmin = true;
+  const userQuery = api.auth.getSession.useQuery();
+
+  const isSuperAdmin = userQuery.data?.role === "super_admin";
 
   const isFeaturesPage = (() => {
     return pathname.toLowerCase().startsWith("/features");

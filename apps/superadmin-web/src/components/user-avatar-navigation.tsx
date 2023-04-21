@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { api } from "@/lib/utils/api";
 import { fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,12 @@ export function UserAvatarNavigation(props: {
   email: string;
 }) {
   const router = useRouter();
+
+  const logoutMutation = api.auth.logout.useMutation({
+    onSettled: () => {
+      router.push("/");
+    },
+  });
 
   return (
     <DropdownMenu>
@@ -55,9 +62,8 @@ export function UserAvatarNavigation(props: {
         </DropdownMenuGroup>
         <DropdownMenuSeparator /> */}
         <DropdownMenuItem
-          onClick={() => {
-            router.push("/");
-          }}
+          onClick={() => logoutMutation.mutate()}
+          disabled={logoutMutation.isLoading}
         >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>

@@ -6,10 +6,12 @@ import { ZodError } from "zod";
 
 import { getDatabaseConnection } from "@craftyfoodz/db";
 
+import { verifyJwt } from "@/lib/utils/jwt";
 import { env } from "@/env.mjs";
+import { AUTH_CONFIG } from "@/lib/config";
 
 type CreateContextOptions = {
-  session: { accountId: string } | null;
+  session: Awaited<ReturnType<typeof verifyJwt>>;
   req: NextApiRequest;
   res: NextApiResponse;
 };
@@ -26,7 +28,13 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
 
-  const session = null;
+  let session: CreateContextOptions["session"] = null;
+  try {
+    const cookie = req.cookies[AUTH_CONFIG.cookie_session_jwt];
+    if (cookie) {
+      session = await verifyJwt(cookie);
+    }
+  } catch (error) {}
 
   return createInnerTRPCContext({
     session,
@@ -57,7 +65,7 @@ const trpcAuthMiddleware = t.middleware(({ ctx, next }) => {
     ctx: {
       ...ctx,
       // infers the `session` as non-nullable
-      session: { ...ctx.session, user: { accountId: "abc123" } },
+      session: { ...ctx.session },
     },
   });
 });

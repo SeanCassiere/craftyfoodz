@@ -1,48 +1,67 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const publicPaths = [
-  "/",
-  "/restaurants*",
-  "/features*",
-  "/settings*",
-  "/sign-in*",
-  "/api/trpc*",
-  "/api/trpc-panel*",
-];
+import { AUTH_CONFIG } from "./lib/config";
+import { verifyJwt } from "./lib/utils/jwt";
 
-const isAuthed = (_: NextRequest) => {
-  return false;
+const isAuthed = async (req: NextRequest) => {
+  const cookie = req.cookies.get(AUTH_CONFIG.cookie_session_jwt);
+  if (!cookie) return null;
+
+  const result = await verifyJwt(cookie.value);
+
+  return result;
 };
 
-const isPublic = (reqPath: string) => {
+const publicPaths = ["/api/trpc*", "/api/trpc-panel*"];
+const isPublicPath = (reqPath: string) => {
   return publicPaths.find((publicPath) =>
     reqPath.match(new RegExp(`^${publicPath}$`.replace("*$", "($|/)"))),
   );
 };
 
-export async function middleware(request: NextRequest) {
-  /**
-   * @todo: Move this below the logged in check once auth is done
-   *  */
-  // START: MOVE ONCE AUTH IS DONE BELOW THE LOGGED IN CHECK
-  if (request.nextUrl.pathname.toLowerCase() === "/features") {
-    return NextResponse.redirect(new URL(request.url + "/global"));
-  }
-  if (request.nextUrl.pathname.toLowerCase() === "/settings") {
-    return NextResponse.redirect(new URL(request.url + "/account"));
-  }
-  // END: MOVE ONCE AUTH IS DONE BELOW THE LOGGED IN CHECK
+const superAdminPaths = ["/features*"];
+const isSuperAdminPath = (reqPath: string) => {
+  return superAdminPaths.find((publicPath) =>
+    reqPath.match(new RegExp(`^${publicPath}$`.replace("*$", "($|/)"))),
+  );
+};
 
-  if (isPublic(request.nextUrl.pathname)) {
+export async function middleware(request: NextRequest) {
+  const isLoggedIn = await isAuthed(request);
+
+  if (request.nextUrl.pathname.toLowerCase() === "/") {
+    if (isLoggedIn) {
+      // redirect to restaurants if logged in
+      return NextResponse.redirect(new URL("/restaurants", request.url));
+    } else {
+      return NextResponse.next();
+    }
+  } else if (isPublicPath(request.nextUrl.pathname)) {
+    // allow public paths
     return NextResponse.next();
   }
 
-  const isLoggedIn = isAuthed(request);
-
+  // redirect if not authed
   if (!isLoggedIn) {
     const signInUrl = new URL("/", request.url);
     signInUrl.searchParams.set("redirect_url", request.url);
     return NextResponse.redirect(signInUrl);
+  }
+
+  // super admin authed requests
+  if (isSuperAdminPath(request.nextUrl.pathname)) {
+    if (isLoggedIn.role !== "super_admin") {
+      return NextResponse.redirect(new URL("/restaurants", request.url));
+    }
+
+    if (request.nextUrl.pathname.toLowerCase() === "/features") {
+      return NextResponse.redirect(new URL(request.url + "/global"));
+    }
+  }
+
+  // general authed requests
+  if (request.nextUrl.pathname.toLowerCase() === "/settings") {
+    return NextResponse.redirect(new URL(request.url + "/account"));
   }
 
   return NextResponse.next();

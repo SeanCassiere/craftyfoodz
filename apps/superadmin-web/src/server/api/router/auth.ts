@@ -99,10 +99,14 @@ export const authRouter = createTRPCRouter({
 
       await ctx.db.update(SuperAdminLoginAttempt).set({ is_expired: true });
 
-      const jwt = generateJwt({ accountId: account.id, role: account.role });
+      const jwt = await generateJwt({
+        accountId: account.id,
+        role: account.role,
+      });
       const cookie = serialize(AUTH_CONFIG.cookie_session_jwt, jwt, {
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 1,
+        path: "/",
       });
       ctx.res.setHeader("Set-Cookie", cookie);
 
@@ -111,6 +115,7 @@ export const authRouter = createTRPCRouter({
   logout: publicProcedure.mutation(async ({ ctx }) => {
     const cookie = serialize(AUTH_CONFIG.cookie_session_jwt, "", {
       expires: new Date(0),
+      path: "/",
     });
     ctx.res.setHeader("Set-Cookie", cookie);
     return true;
