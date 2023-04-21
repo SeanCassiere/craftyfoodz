@@ -1,6 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const publicPaths = ["/", "/dashboard", "/sign-in*", "/api/trpc*"];
+const publicPaths = [
+  "/",
+  "/restaurants*",
+  "/features*",
+  "/settings*",
+  "/sign-in*",
+  "/api/trpc*",
+];
 
 const isAuthed = (_: NextRequest) => {
   return false;
@@ -13,7 +20,18 @@ const isPublic = (reqPath: string) => {
 };
 
 export async function middleware(request: NextRequest) {
-  console.log("middleware running");
+  /**
+   * @todo: Move this below the logged in check once auth is done
+   *  */
+  // START: MOVE ONCE AUTH IS DONE BELOW THE LOGGED IN CHECK
+  if (request.nextUrl.pathname.toLowerCase() === "/features") {
+    return NextResponse.redirect(new URL(request.url + "/global"));
+  }
+  if (request.nextUrl.pathname.toLowerCase() === "/settings") {
+    return NextResponse.redirect(new URL(request.url + "/account"));
+  }
+  // END: MOVE ONCE AUTH IS DONE BELOW THE LOGGED IN CHECK
+
   if (isPublic(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
