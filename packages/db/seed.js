@@ -27,13 +27,13 @@ async function seed() {
   // create and seed super-admins
   for (const user of users) {
     await db.execute(
-      sql`insert into sa_accounts (id, email, name, role) values ("${user.id}", "${user.email}", "${user.name}", "super_admin")`,
+      sql`insert into sa_accounts (id, email, name, role) values (${user.id}, ${user.email}, ${user.name}, 'super_admin')`,
     );
   }
 
   // delete all seeded super-admins
   // for (const user of users) {
-  //   await db.execute(sql`delete from sa_accounts where id="${user.id}"`);
+  //   await db.execute(sql`delete from sa_accounts where id=${user.id}`);
   // }
 
   const accounts = await db.execute(sql`select * from sa_accounts`);
