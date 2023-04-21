@@ -2,16 +2,25 @@ import React from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Command } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import { api } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
 import { fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
+import {
+  ConfirmLoginAccessCodeZodSchema,
+  EmailLoginZodSchema,
+  type ConfirmLoginAccessCodeZodSchemaType,
+  type EmailLoginZodSchemaType,
+} from "@/server/validation/auth";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -119,21 +128,35 @@ const EmailAuthForm = ({
   onSuccess,
   ...props
 }: EmailAuthFormProps) => {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<EmailLoginZodSchemaType>({
+    resolver: zodResolver(EmailLoginZodSchema),
+    defaultValues: { email: "" },
+  });
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
-    setIsLoading(true);
+  const loginMutation = api.auth.login.useMutation({
+    onSuccess: (data) => {
+      if (data) {
+        onSuccess(data?.identifier);
+      }
+    },
+    onError: (err) => {
+      alert(err.message);
+    },
+  });
 
-    setTimeout(() => {
-      setIsLoading(false);
-      onSuccess("123abc");
-    }, 3000);
-  }
+  const isLoading = loginMutation.isLoading;
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={onSubmit}>
+      <form
+        onSubmit={handleSubmit((values) => {
+          loginMutation.mutate(values);
+        })}
+      >
         <div className="grid gap-2">
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="email">
@@ -147,7 +170,14 @@ const EmailAuthForm = ({
               autoComplete="email"
               autoCorrect="off"
               disabled={isLoading}
+              {...register("email")}
             />
+
+            {errors.email && (
+              <p className="mb-2 text-sm text-red-500">
+                Enter your email address.
+              </p>
+            )}
           </div>
           <Button type="submit" disabled={isLoading}>
             {isLoading && (
@@ -174,24 +204,36 @@ const AccessCodeAuthForm = ({
   identifierTag,
   ...props
 }: AccessCodeAuthFormProps) => {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<ConfirmLoginAccessCodeZodSchemaType>({
+    resolver: zodResolver(ConfirmLoginAccessCodeZodSchema),
+    defaultValues: { identifier: identifierTag, accessCode: "" },
+  });
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
-    setIsLoading(true);
-
-    setTimeout(() => {
-      setIsLoading(false);
+  const confirmLoginMutation = api.auth.confirmLoginAccessCode.useMutation({
+    onSuccess: (data) => {
       onSuccess();
-    }, 3000);
-  }
+    },
+    onError: (err) => {
+      alert(err.message);
+    },
+  });
+
+  const isLoading = confirmLoginMutation.isLoading;
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={onSubmit}>
+      <form
+        onSubmit={handleSubmit((values) => {
+          confirmLoginMutation.mutate(values);
+        })}
+      >
         <div className="grid gap-2">
           <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
+            <Label className="sr-only" htmlFor="access-code">
               Access code
             </Label>
             <Input
@@ -202,8 +244,12 @@ const AccessCodeAuthForm = ({
               autoComplete="one-time-code"
               autoCorrect="off"
               disabled={isLoading}
+              {...register("accessCode")}
             />
           </div>
+          {errors.accessCode && (
+            <p className="mb-2 text-sm text-red-500">Enter the access code.</p>
+          )}
           <Button type="submit" disabled={isLoading}>
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
