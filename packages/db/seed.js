@@ -8,7 +8,7 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is not set");
 }
 
-const id = "sau_648294274326";
+const id = "saua_648294274326";
 const email = "noreply@pingstash.com";
 const name = "Admin";
 
@@ -21,7 +21,7 @@ async function seed() {
   const start = new Date();
 
   const query = await db.execute(
-    sql`insert into super_admin_accounts (id, email, name) values ("${id}", "${email}", "${name}")`,
+    sql`insert into super_admin_accounts (id, email, name, role) values ("${id}", "${email}", "${name}", "super_admin")`,
   );
   // const query = await db.execute(
   //   sql`delete from super_admin_accounts where id="${id}"`,

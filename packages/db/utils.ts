@@ -8,8 +8,8 @@ const cuid2 = init({ length: 12 });
  * @returns A unique ID for a record.
  */
 export function generateDbId(prefix: string) {
-  if (prefix.length !== 3) {
-    throw new Error("generateId: Prefix must be 3 characters long");
+  if (prefix.length < 3 || prefix.length > 4) {
+    throw new Error("generateId: Prefix must be 3 or 4 characters long");
   }
 
   return `${prefix}_${cuid2()}`;
