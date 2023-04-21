@@ -1,6 +1,6 @@
 import { init } from "@paralleldrive/cuid2";
 
-const cuid2 = init({ length: 12 });
+const cuid2 = init({ length: 14 });
 
 /**
  * A helper function to generate a unique ID for a record.
