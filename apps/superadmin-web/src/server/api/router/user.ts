@@ -1,0 +1,66 @@
+import { TRPCError } from "@trpc/server";
+
+import { Exps } from "@craftyfoodz/db";
+import { SuperAdminAccount } from "@craftyfoodz/db/tables";
+
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
+import { UpdateUserInfoZodSchema } from "@/server/validation/user";
+
+export const userRouter = createTRPCRouter({
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const { role } = ctx.session;
+
+    const query = ctx.db.select().from(SuperAdminAccount);
+
+    if (role !== "super_admin") {
+      query.where(Exps.notInArray(SuperAdminAccount.role, ["super_admin"]));
+    }
+    query.orderBy(Exps.desc(SuperAdminAccount.created_at));
+
+    const result = await query.execute();
+
+    return result;
+  }),
+  updateUserInformation: protectedProcedure
+    .input(UpdateUserInfoZodSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { accountId, role } = ctx.session;
+
+      if (input.id === accountId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cannot update your own information",
+        });
+      }
+
+      const users = await ctx.db.select().from(SuperAdminAccount);
+
+      // check if other accounts are using the input email throw an error
+      if (
+        users
+          .filter((u) => u.id !== input.id)
+          .map((u) => u.email.toLowerCase())
+          .includes(input.email.toLowerCase())
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Email already in use",
+        });
+      }
+
+      await ctx.db
+        .update(SuperAdminAccount)
+        .set({
+          name: input.name,
+          email: input.email.toLowerCase(),
+          ...(role === "super_admin" ? { role: input.role } : {}),
+        })
+        .where(Exps.eq(SuperAdminAccount.id, input.id));
+
+      return { success: true };
+    }),
+});
