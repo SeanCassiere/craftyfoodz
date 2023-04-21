@@ -77,7 +77,7 @@ const MembersSettingsPage: NextPage = () => {
         <SiteHeader pathname={router.pathname} />
         <ContentToContainer>
           <div className="grid grid-cols-12">
-            <div className="col-span-12 py-4 md:col-span-2 md:px-2">
+            <div className="col-span-12 py-4 md:col-span-3 md:px-2">
               <SideNavigation title="Settings">
                 <SideNavigation.Item
                   href="/settings/account"
@@ -93,7 +93,7 @@ const MembersSettingsPage: NextPage = () => {
                 </SideNavigation.Item>
               </SideNavigation>
             </div>
-            <div className="col-span-12 pb-4 pt-6 md:col-span-10 md:pt-4">
+            <div className="col-span-12 pb-4 pt-6 md:col-span-9 md:pt-4">
               <div className="mb-4 flex items-center justify-between md:items-start">
                 <h2 className="text-lg font-medium leading-3 transition sm:flex">
                   Members
@@ -183,6 +183,7 @@ const MemberItem = (
     handleSubmit,
     setValue,
     watch,
+    reset,
   } = useForm<UpdateUserInfoZodSchemaType>({
     resolver: zodResolver(UpdateUserInfoZodSchema),
     defaultValues: {
@@ -201,8 +202,10 @@ const MemberItem = (
         title: "Updated successfully!",
         description: "Account updated",
       });
-      setOpen(false);
+
       props.onSuccess();
+      reset();
+      setOpen(false);
     },
     onError: (err) => {
       toast({
@@ -239,6 +242,11 @@ const MemberItem = (
     });
   };
 
+  const handleCloseDialog = (value: boolean) => {
+    reset();
+    setOpen(value);
+  };
+
   return (
     <div className="flex items-center gap-4 p-2">
       <div>
@@ -263,7 +271,7 @@ const MemberItem = (
         <span className="text-xs">{props.member.email}</span>
       </div>
       <div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleCloseDialog}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost">
@@ -411,6 +419,7 @@ const CreateMemberForm = (props: CreateMemberFormProps) => {
     formState: { errors },
     setValue,
     watch,
+    reset,
   } = useForm<CreateUserZodSchemaType>({
     resolver: zodResolver(CreateUserZodSchema),
     defaultValues: { email: "", name: "", role: "admin" },
@@ -424,8 +433,9 @@ const CreateMemberForm = (props: CreateMemberFormProps) => {
         title: "Created successfully!",
         description: "Account added",
       });
-      setOpen(false);
       props.onSuccess();
+      reset();
+      setOpen(false);
     },
     onError: (err) => {
       toast({
@@ -439,8 +449,13 @@ const CreateMemberForm = (props: CreateMemberFormProps) => {
     mutation.mutate(data);
   });
 
+  const handleClose = (value: boolean) => {
+    reset();
+    setOpen(value);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogTrigger asChild>
         <Button size="sm">Add member</Button>
       </DialogTrigger>
