@@ -30,7 +30,7 @@ function SideNavigationItem({
     <Link
       href={href}
       className={cn(
-        "select-none border-l px-4 py-1.5 text-sm transition",
+        "select-none border-l px-4 py-2 text-sm transition",
         active ? "border-gray-600 font-semibold" : "hover:border-gray-400",
       )}
     >

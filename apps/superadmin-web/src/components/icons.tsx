@@ -5,6 +5,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
+  Cloud,
+  CloudOff,
   Copy,
   CreditCard,
   File,
@@ -12,6 +14,8 @@ import {
   HelpCircle,
   Image,
   Laptop,
+  Lightbulb,
+  LightbulbOff,
   Loader2,
   Lock,
   Moon,
@@ -73,6 +77,10 @@ export const Icons = {
   lock: Lock,
   unlock: Unlock,
   pencil: Pencil,
+  lightbulb: Lightbulb,
+  lightbulbOff: LightbulbOff,
+  cloud: Cloud,
+  cloudOff: CloudOff,
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path
