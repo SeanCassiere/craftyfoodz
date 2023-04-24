@@ -14,7 +14,7 @@ export const SuperAdminAccount = mysqlTable("sa_accounts", {
   email: varchar("email", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   role: mysqlEnum("role", SUPER_ADMIN_ROLES).notNull().default("admin"),
-  is_active: boolean("is_active").default(true),
+  is_active: boolean("is_active").notNull().default(true),
   updated_at: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
@@ -25,7 +25,7 @@ export const SuperAdminLoginAttempt = mysqlTable(
     id: varchar("id", { length: 20 }).primaryKey(),
     sa_account_id: varchar("sa_account_id", { length: 20 }).notNull(),
     access_code: varchar("access_code", { length: 255 }).notNull(),
-    is_expired: boolean("is_expired").default(false),
+    is_expired: boolean("is_expired").notNull().default(false),
     updated_at: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),
     created_at: timestamp("created_at").notNull().defaultNow(),
   },
