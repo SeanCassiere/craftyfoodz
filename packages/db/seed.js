@@ -13,7 +13,7 @@ const users = [
     id: "saua_900000000001",
     email: "noreply@pingstash.com",
     name: "PingStash",
-    role: "super_admin",
+    role: "developer",
   },
   {
     id: "saua_900000000002",
