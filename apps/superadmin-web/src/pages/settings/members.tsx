@@ -60,11 +60,11 @@ const MembersSettingsPage: NextPage = () => {
   const members = api.users.getAll.useQuery();
 
   const accountId = userQuery.data?.id || "";
-  const isSuperAdmin = userQuery.data?.role === "super_admin";
+  const isDeveloperAdmin = userQuery.data?.role === "developer";
 
   const adminMembers = (members.data || []).filter((u) => u.role === "admin");
-  const superAdminMembers = (members.data || []).filter(
-    (u) => u.role === "super_admin",
+  const developerAdminMembers = (members.data || []).filter(
+    (u) => u.role === "developer",
   );
 
   return (
@@ -100,7 +100,7 @@ const MembersSettingsPage: NextPage = () => {
                 </h2>
                 <div>
                   <CreateMemberForm
-                    isSuperAdmin={isSuperAdmin}
+                    isSuperAdmin={isDeveloperAdmin}
                     onSuccess={members.refetch}
                   />
                 </div>
@@ -114,16 +114,16 @@ const MembersSettingsPage: NextPage = () => {
                   members={adminMembers}
                   accountId={accountId}
                   onSuccess={members.refetch}
-                  isSuperAdmin={isSuperAdmin}
+                  isSuperAdmin={isDeveloperAdmin}
                 />
 
-                {isSuperAdmin && (
+                {isDeveloperAdmin && (
                   <MemberList
-                    title="Super Administrators"
-                    members={superAdminMembers}
+                    title="Developers"
+                    members={developerAdminMembers}
                     accountId={accountId}
                     onSuccess={members.refetch}
-                    isSuperAdmin={isSuperAdmin}
+                    isSuperAdmin={isDeveloperAdmin}
                   />
                 )}
               </div>
@@ -352,7 +352,7 @@ const MemberItem = (
                     <Select
                       value={roleValue}
                       onValueChange={(value) => {
-                        if (value === "admin" || value === "super_admin") {
+                        if (value === "admin" || value === "developer") {
                           setValue("role", value);
                         }
                       }}
@@ -366,9 +366,7 @@ const MemberItem = (
                         <SelectGroup>
                           <SelectLabel>Roles</SelectLabel>
                           <SelectItem value="admin">Administrator</SelectItem>
-                          <SelectItem value="super_admin">
-                            Super administrator
-                          </SelectItem>
+                          <SelectItem value="developer">Developer</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -507,7 +505,7 @@ const CreateMemberForm = (props: CreateMemberFormProps) => {
                 <Select
                   value={roleValue}
                   onValueChange={(value) => {
-                    if (value === "admin" || value === "super_admin") {
+                    if (value === "admin" || value === "developer") {
                       setValue("role", value);
                     }
                   }}
@@ -519,9 +517,7 @@ const CreateMemberForm = (props: CreateMemberFormProps) => {
                     <SelectGroup>
                       <SelectLabel>Roles</SelectLabel>
                       <SelectItem value="admin">Administrator</SelectItem>
-                      <SelectItem value="super_admin">
-                        Super administrator
-                      </SelectItem>
+                      <SelectItem value="developer">Developer</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>

@@ -5,7 +5,7 @@ import { env } from "@/env.mjs";
 
 type GenerateJwtPayload = {
   accountId: string;
-  role: "admin" | "super_admin";
+  role: "admin" | "developer";
 };
 export async function generateJwt(payload: GenerateJwtPayload) {
   const iat = Math.floor(Date.now() / 1000);
@@ -23,7 +23,7 @@ export async function generateJwt(payload: GenerateJwtPayload) {
 const JwtDecodePayload = z.object({
   sub: z.string().min(1),
   accountId: z.string().min(1),
-  role: z.enum(["admin", "super_admin"]).default("admin"),
+  role: z.enum(["admin", "developer"]).default("admin"),
 });
 
 export async function verifyJwt(token: string) {

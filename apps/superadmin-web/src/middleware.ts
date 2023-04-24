@@ -12,16 +12,16 @@ const isAuthed = async (req: NextRequest) => {
   return result;
 };
 
-const publicPaths = ["/api/trpc*", "/api/trpc-panel*"];
+const publicPaths = ["/api/trpc*"];
 const isPublicPath = (reqPath: string) => {
   return publicPaths.find((publicPath) =>
     reqPath.match(new RegExp(`^${publicPath}$`.replace("*$", "($|/)"))),
   );
 };
 
-const superAdminPaths = ["/features*"];
-const isSuperAdminPath = (reqPath: string) => {
-  return superAdminPaths.find((publicPath) =>
+const developerAdminPaths = ["/features*"];
+const isDeveloperAdminPath = (reqPath: string) => {
+  return developerAdminPaths.find((publicPath) =>
     reqPath.match(new RegExp(`^${publicPath}$`.replace("*$", "($|/)"))),
   );
 };
@@ -48,9 +48,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
-  // super admin authed requests
-  if (isSuperAdminPath(request.nextUrl.pathname)) {
-    if (isLoggedIn.role !== "super_admin") {
+  // developer-only admin authed requests
+  if (isDeveloperAdminPath(request.nextUrl.pathname)) {
+    if (isLoggedIn.role !== "developer") {
       return NextResponse.redirect(new URL("/restaurants", request.url));
     }
 

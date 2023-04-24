@@ -26,7 +26,7 @@ export const UpdateUserInfoZodSchema = z.object({
     .min(1, "Required")
     .max(UI_CONFIG.max_user_name_length, "Too long"),
   email: z.string().email().min(1, "Required").max(254, "Too long"),
-  role: z.enum(["admin", "super_admin"]).default("admin"),
+  role: z.enum(["admin", "developer"]).default("admin"),
 });
 export type UpdateUserInfoZodSchemaType = z.infer<
   typeof UpdateUserInfoZodSchema
@@ -38,6 +38,6 @@ export const CreateUserZodSchema = z.object({
     .min(1, "Required")
     .max(UI_CONFIG.max_user_name_length, "Too long"),
   email: z.string().email().min(1, "Required").max(254, "Too long"),
-  role: z.enum(["admin", "super_admin"]).default("admin"),
+  role: z.enum(["admin", "developer"]).default("admin"),
 });
 export type CreateUserZodSchemaType = z.infer<typeof CreateUserZodSchema>;

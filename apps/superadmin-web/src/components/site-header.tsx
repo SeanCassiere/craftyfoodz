@@ -11,7 +11,7 @@ import { UserAvatarNavigation } from "./user-avatar-navigation";
 export const SiteHeader = ({ pathname }: { pathname: string }) => {
   const userQuery = api.auth.getUser.useQuery();
 
-  const isSuperAdmin = userQuery.data?.role === "super_admin";
+  const isDeveloperAdmin = userQuery.data?.role === "developer";
 
   const onFeaturesTab = (() => {
     return pathname.toLowerCase().startsWith("/features");
@@ -59,7 +59,7 @@ export const SiteHeader = ({ pathname }: { pathname: string }) => {
             Restaurants
           </NavLink>
 
-          {isSuperAdmin && (
+          {isDeveloperAdmin && (
             <>
               <NavLink href="/features" active={onFeaturesTab}>
                 Features

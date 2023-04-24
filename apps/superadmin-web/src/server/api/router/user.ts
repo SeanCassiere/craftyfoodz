@@ -17,8 +17,8 @@ export const userRouter = createTRPCRouter({
 
     const query = ctx.db.select().from(SuperAdminAccount);
 
-    if (role !== "super_admin") {
-      query.where(Exps.notInArray(SuperAdminAccount.role, ["super_admin"]));
+    if (role !== "developer") {
+      query.where(Exps.notInArray(SuperAdminAccount.role, ["developer"]));
     }
     query.orderBy(Exps.desc(SuperAdminAccount.created_at));
 
@@ -47,7 +47,7 @@ export const userRouter = createTRPCRouter({
         id: generateDbId("saua"),
         name: input.name,
         email: input.email.toLowerCase(),
-        ...(role === "super_admin" ? { role: input.role } : { role: "admin" }),
+        ...(role === "developer" ? { role: input.role } : { role: "admin" }),
       });
 
       return { success: true };
@@ -84,7 +84,7 @@ export const userRouter = createTRPCRouter({
         .set({
           name: input.name,
           email: input.email.toLowerCase(),
-          ...(role === "super_admin" ? { role: input.role } : {}),
+          ...(role === "developer" ? { role: input.role } : {}),
         })
         .where(Exps.eq(SuperAdminAccount.id, input.id));
 
