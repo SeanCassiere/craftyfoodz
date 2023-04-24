@@ -193,7 +193,7 @@ const FeaturePanel = (props: {
             })}
             {features.length === 0 && (
               <p className="px-2 py-1.5 text-sm">
-                We've got no feature configurations to show you here.
+                {"We've got no feature configurations to show you here."}
               </p>
             )}
           </div>

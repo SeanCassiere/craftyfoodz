@@ -17,6 +17,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 import { api, type RouterOutputs } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
+import { useGetAuthUser } from "@/lib/hooks/useGetAuthUser";
 import { copyToClipboard } from "@/lib/utils";
 import {
   UpdateUserEmailZodSchema,
@@ -30,7 +31,7 @@ type UserProfile = RouterOutputs["auth"]["getUser"];
 const OverviewSettingsPage: NextPage = () => {
   const router = useRouter();
 
-  const userQuery = api.auth.getUser.useQuery();
+  const userQuery = useGetAuthUser();
 
   const apiCtx = api.useContext();
 

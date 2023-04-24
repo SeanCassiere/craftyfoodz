@@ -2,16 +2,18 @@ import React, { type ReactNode } from "react";
 import Link from "next/link";
 import { Command } from "lucide-react";
 
-import { api } from "@/lib/utils/api";
+import { SUPER_ADMIN_DEVELOPER_ROLE } from "@craftyfoodz/db/enums";
+
 import { UI_CONFIG } from "@/lib/config";
 import { fontSans } from "@/lib/fonts";
+import { useGetAuthUser } from "@/lib/hooks/useGetAuthUser";
 import { cn, makeProfileImageUrl } from "@/lib/utils";
 import { UserAvatarNavigation } from "./user-avatar-navigation";
 
 export const SiteHeader = ({ pathname }: { pathname: string }) => {
-  const userQuery = api.auth.getUser.useQuery();
+  const userQuery = useGetAuthUser();
 
-  const isSuperAdmin = userQuery.data?.role === "super_admin";
+  const isDeveloperAdmin = userQuery.data?.role === SUPER_ADMIN_DEVELOPER_ROLE;
 
   const onFeaturesTab = (() => {
     return pathname.toLowerCase().startsWith("/features");
@@ -59,7 +61,7 @@ export const SiteHeader = ({ pathname }: { pathname: string }) => {
             Restaurants
           </NavLink>
 
-          {isSuperAdmin && (
+          {isDeveloperAdmin && (
             <>
               <NavLink href="/features" active={onFeaturesTab}>
                 Features

@@ -5,6 +5,11 @@ import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import {
+  SUPER_ADMIN_ADMIN_ROLE,
+  SUPER_ADMIN_DEVELOPER_ROLE,
+} from "@craftyfoodz/db/enums";
+
 import { Icons } from "@/components/icons";
 import { ContentToContainer } from "@/components/layout/content-to-container";
 import { MainContainer } from "@/components/layout/main-container";
@@ -44,6 +49,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { api, type RouterOutputs } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
 import { fontSans } from "@/lib/fonts";
+import { useGetAuthUser } from "@/lib/hooks/useGetAuthUser";
 import { cn, makeProfileImageUrl } from "@/lib/utils";
 import {
   CreateUserZodSchema,
@@ -56,15 +62,15 @@ type UserList = RouterOutputs["users"]["getAll"];
 
 const MembersSettingsPage: NextPage = () => {
   const router = useRouter();
-  const userQuery = api.auth.getUser.useQuery();
+  const userQuery = useGetAuthUser();
   const members = api.users.getAll.useQuery();
 
   const accountId = userQuery.data?.id || "";
-  const isSuperAdmin = userQuery.data?.role === "super_admin";
+  const isDeveloperAdmin = userQuery.data?.role === SUPER_ADMIN_DEVELOPER_ROLE;
 
   const adminMembers = (members.data || []).filter((u) => u.role === "admin");
-  const superAdminMembers = (members.data || []).filter(
-    (u) => u.role === "super_admin",
+  const developerAdminMembers = (members.data || []).filter(
+    (u) => u.role === SUPER_ADMIN_DEVELOPER_ROLE,
   );
 
   return (
@@ -100,7 +106,7 @@ const MembersSettingsPage: NextPage = () => {
                 </h2>
                 <div>
                   <CreateMemberForm
-                    isSuperAdmin={isSuperAdmin}
+                    isSuperAdmin={isDeveloperAdmin}
                     onSuccess={members.refetch}
                   />
                 </div>
@@ -114,16 +120,16 @@ const MembersSettingsPage: NextPage = () => {
                   members={adminMembers}
                   accountId={accountId}
                   onSuccess={members.refetch}
-                  isSuperAdmin={isSuperAdmin}
+                  isSuperAdmin={isDeveloperAdmin}
                 />
 
-                {isSuperAdmin && (
+                {isDeveloperAdmin && (
                   <MemberList
-                    title="Super Administrators"
-                    members={superAdminMembers}
+                    title="Developers"
+                    members={developerAdminMembers}
                     accountId={accountId}
                     onSuccess={members.refetch}
-                    isSuperAdmin={isSuperAdmin}
+                    isSuperAdmin={isDeveloperAdmin}
                   />
                 )}
               </div>
@@ -352,7 +358,10 @@ const MemberItem = (
                     <Select
                       value={roleValue}
                       onValueChange={(value) => {
-                        if (value === "admin" || value === "super_admin") {
+                        if (
+                          value === SUPER_ADMIN_ADMIN_ROLE ||
+                          value === SUPER_ADMIN_DEVELOPER_ROLE
+                        ) {
                           setValue("role", value);
                         }
                       }}
@@ -365,9 +374,11 @@ const MemberItem = (
                       >
                         <SelectGroup>
                           <SelectLabel>Roles</SelectLabel>
-                          <SelectItem value="admin">Administrator</SelectItem>
-                          <SelectItem value="super_admin">
-                            Super administrator
+                          <SelectItem value={SUPER_ADMIN_ADMIN_ROLE}>
+                            Administrator
+                          </SelectItem>
+                          <SelectItem value={SUPER_ADMIN_DEVELOPER_ROLE}>
+                            Developer
                           </SelectItem>
                         </SelectGroup>
                       </SelectContent>
@@ -507,7 +518,10 @@ const CreateMemberForm = (props: CreateMemberFormProps) => {
                 <Select
                   value={roleValue}
                   onValueChange={(value) => {
-                    if (value === "admin" || value === "super_admin") {
+                    if (
+                      value === SUPER_ADMIN_ADMIN_ROLE ||
+                      value === SUPER_ADMIN_DEVELOPER_ROLE
+                    ) {
                       setValue("role", value);
                     }
                   }}
@@ -518,9 +532,11 @@ const CreateMemberForm = (props: CreateMemberFormProps) => {
                   <SelectContent className={cn("font-sans", fontSans.variable)}>
                     <SelectGroup>
                       <SelectLabel>Roles</SelectLabel>
-                      <SelectItem value="admin">Administrator</SelectItem>
-                      <SelectItem value="super_admin">
-                        Super administrator
+                      <SelectItem value={SUPER_ADMIN_ADMIN_ROLE}>
+                        Administrator
+                      </SelectItem>
+                      <SelectItem value={SUPER_ADMIN_DEVELOPER_ROLE}>
+                        Developer
                       </SelectItem>
                     </SelectGroup>
                   </SelectContent>

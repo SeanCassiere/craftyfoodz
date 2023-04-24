@@ -8,12 +8,17 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is not set");
 }
 
+/**
+ * Look at the following files before changing the input data for the seed script
+ * 1. ./tables/super-admin.ts
+ * 2. ./enums.ts
+ */
 const users = [
   {
     id: "saua_900000000001",
     email: "noreply@pingstash.com",
     name: "PingStash",
-    role: "super_admin",
+    role: "developer",
   },
   {
     id: "saua_900000000002",
