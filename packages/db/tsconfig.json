@@ -6,6 +6,7 @@
     "tables",
     "features.ts",
     "schema.ts",
-    "utils.ts"
+    "utils.ts",
+    "enums.ts"
   ]
 }
