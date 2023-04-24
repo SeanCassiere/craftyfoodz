@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { SUPER_ADMIN_ROLES } from "@craftyfoodz/db/enums";
+
 import { UI_CONFIG } from "@/lib/config";
 
 export const UpdateUserNameZodSchema = z.object({
@@ -26,7 +28,7 @@ export const UpdateUserInfoZodSchema = z.object({
     .min(1, "Required")
     .max(UI_CONFIG.max_user_name_length, "Too long"),
   email: z.string().email().min(1, "Required").max(254, "Too long"),
-  role: z.enum(["admin", "developer"]).default("admin"),
+  role: z.enum(SUPER_ADMIN_ROLES).default("admin"),
 });
 export type UpdateUserInfoZodSchemaType = z.infer<
   typeof UpdateUserInfoZodSchema
@@ -38,6 +40,6 @@ export const CreateUserZodSchema = z.object({
     .min(1, "Required")
     .max(UI_CONFIG.max_user_name_length, "Too long"),
   email: z.string().email().min(1, "Required").max(254, "Too long"),
-  role: z.enum(["admin", "developer"]).default("admin"),
+  role: z.enum(SUPER_ADMIN_ROLES).default("admin"),
 });
 export type CreateUserZodSchemaType = z.infer<typeof CreateUserZodSchema>;

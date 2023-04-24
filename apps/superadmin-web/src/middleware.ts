@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { SUPER_ADMIN_DEVELOPER_ROLE } from "@craftyfoodz/db/enums";
+
 import { AUTH_CONFIG } from "./lib/config";
 import { verifyJwt } from "./lib/utils/jwt";
 
@@ -50,7 +52,7 @@ export async function middleware(request: NextRequest) {
 
   // developer-only admin authed requests
   if (isDeveloperAdminPath(request.nextUrl.pathname)) {
-    if (isLoggedIn.role !== "developer") {
+    if (isLoggedIn.role !== SUPER_ADMIN_DEVELOPER_ROLE) {
       return NextResponse.redirect(new URL("/restaurants", request.url));
     }
 

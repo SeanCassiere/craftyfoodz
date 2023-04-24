@@ -2,6 +2,8 @@ import React, { type ReactNode } from "react";
 import Link from "next/link";
 import { Command } from "lucide-react";
 
+import { SUPER_ADMIN_DEVELOPER_ROLE } from "@craftyfoodz/db/enums";
+
 import { api } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
 import { fontSans } from "@/lib/fonts";
@@ -11,7 +13,7 @@ import { UserAvatarNavigation } from "./user-avatar-navigation";
 export const SiteHeader = ({ pathname }: { pathname: string }) => {
   const userQuery = api.auth.getUser.useQuery();
 
-  const isDeveloperAdmin = userQuery.data?.role === "developer";
+  const isDeveloperAdmin = userQuery.data?.role === SUPER_ADMIN_DEVELOPER_ROLE;
 
   const onFeaturesTab = (() => {
     return pathname.toLowerCase().startsWith("/features");

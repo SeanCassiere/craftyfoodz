@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { Exps } from "@craftyfoodz/db";
+import { SUPER_ADMIN_DEVELOPER_ROLE } from "@craftyfoodz/db/enums";
 import { SuperAdminAccount } from "@craftyfoodz/db/tables";
 import { generateDbId } from "@craftyfoodz/db/utils";
 
@@ -17,8 +18,10 @@ export const userRouter = createTRPCRouter({
 
     const query = ctx.db.select().from(SuperAdminAccount);
 
-    if (role !== "developer") {
-      query.where(Exps.notInArray(SuperAdminAccount.role, ["developer"]));
+    if (role !== SUPER_ADMIN_DEVELOPER_ROLE) {
+      query.where(
+        Exps.notInArray(SuperAdminAccount.role, [SUPER_ADMIN_DEVELOPER_ROLE]),
+      );
     }
     query.orderBy(Exps.desc(SuperAdminAccount.created_at));
 
@@ -47,7 +50,9 @@ export const userRouter = createTRPCRouter({
         id: generateDbId("saua"),
         name: input.name,
         email: input.email.toLowerCase(),
-        ...(role === "developer" ? { role: input.role } : { role: "admin" }),
+        ...(role === SUPER_ADMIN_DEVELOPER_ROLE
+          ? { role: input.role }
+          : { role: "admin" }),
       });
 
       return { success: true };
@@ -84,7 +89,7 @@ export const userRouter = createTRPCRouter({
         .set({
           name: input.name,
           email: input.email.toLowerCase(),
-          ...(role === "developer" ? { role: input.role } : {}),
+          ...(role === SUPER_ADMIN_DEVELOPER_ROLE ? { role: input.role } : {}),
         })
         .where(Exps.eq(SuperAdminAccount.id, input.id));
 

@@ -5,6 +5,12 @@ import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import {
+  SUPER_ADMIN_ADMIN_ROLE,
+  SUPER_ADMIN_DEVELOPER_ROLE,
+  SUPER_ADMIN_ROLES,
+} from "@craftyfoodz/db/enums";
+
 import { Icons } from "@/components/icons";
 import { ContentToContainer } from "@/components/layout/content-to-container";
 import { MainContainer } from "@/components/layout/main-container";
@@ -60,11 +66,11 @@ const MembersSettingsPage: NextPage = () => {
   const members = api.users.getAll.useQuery();
 
   const accountId = userQuery.data?.id || "";
-  const isDeveloperAdmin = userQuery.data?.role === "developer";
+  const isDeveloperAdmin = userQuery.data?.role === SUPER_ADMIN_DEVELOPER_ROLE;
 
   const adminMembers = (members.data || []).filter((u) => u.role === "admin");
   const developerAdminMembers = (members.data || []).filter(
-    (u) => u.role === "developer",
+    (u) => u.role === SUPER_ADMIN_DEVELOPER_ROLE,
   );
 
   return (
@@ -352,7 +358,10 @@ const MemberItem = (
                     <Select
                       value={roleValue}
                       onValueChange={(value) => {
-                        if (value === "admin" || value === "developer") {
+                        if (
+                          value === SUPER_ADMIN_ADMIN_ROLE ||
+                          value === SUPER_ADMIN_DEVELOPER_ROLE
+                        ) {
                           setValue("role", value);
                         }
                       }}
@@ -365,8 +374,12 @@ const MemberItem = (
                       >
                         <SelectGroup>
                           <SelectLabel>Roles</SelectLabel>
-                          <SelectItem value="admin">Administrator</SelectItem>
-                          <SelectItem value="developer">Developer</SelectItem>
+                          <SelectItem value={SUPER_ADMIN_ADMIN_ROLE}>
+                            Administrator
+                          </SelectItem>
+                          <SelectItem value={SUPER_ADMIN_DEVELOPER_ROLE}>
+                            Developer
+                          </SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -505,7 +518,10 @@ const CreateMemberForm = (props: CreateMemberFormProps) => {
                 <Select
                   value={roleValue}
                   onValueChange={(value) => {
-                    if (value === "admin" || value === "developer") {
+                    if (
+                      value === SUPER_ADMIN_ADMIN_ROLE ||
+                      value === SUPER_ADMIN_DEVELOPER_ROLE
+                    ) {
                       setValue("role", value);
                     }
                   }}
@@ -516,8 +532,12 @@ const CreateMemberForm = (props: CreateMemberFormProps) => {
                   <SelectContent className={cn("font-sans", fontSans.variable)}>
                     <SelectGroup>
                       <SelectLabel>Roles</SelectLabel>
-                      <SelectItem value="admin">Administrator</SelectItem>
-                      <SelectItem value="developer">Developer</SelectItem>
+                      <SelectItem value={SUPER_ADMIN_ADMIN_ROLE}>
+                        Administrator
+                      </SelectItem>
+                      <SelectItem value={SUPER_ADMIN_DEVELOPER_ROLE}>
+                        Developer
+                      </SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
