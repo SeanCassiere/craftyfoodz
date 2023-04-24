@@ -4,14 +4,14 @@ import { Command } from "lucide-react";
 
 import { SUPER_ADMIN_DEVELOPER_ROLE } from "@craftyfoodz/db/enums";
 
-import { api } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
 import { fontSans } from "@/lib/fonts";
+import { useGetAuthUser } from "@/lib/hooks/useGetAuthUser";
 import { cn, makeProfileImageUrl } from "@/lib/utils";
 import { UserAvatarNavigation } from "./user-avatar-navigation";
 
 export const SiteHeader = ({ pathname }: { pathname: string }) => {
-  const userQuery = api.auth.getUser.useQuery();
+  const userQuery = useGetAuthUser();
 
   const isDeveloperAdmin = userQuery.data?.role === SUPER_ADMIN_DEVELOPER_ROLE;
 

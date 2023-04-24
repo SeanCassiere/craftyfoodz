@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import {
   SUPER_ADMIN_ADMIN_ROLE,
   SUPER_ADMIN_DEVELOPER_ROLE,
-  SUPER_ADMIN_ROLES,
 } from "@craftyfoodz/db/enums";
 
 import { Icons } from "@/components/icons";
@@ -50,6 +49,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { api, type RouterOutputs } from "@/lib/utils/api";
 import { UI_CONFIG } from "@/lib/config";
 import { fontSans } from "@/lib/fonts";
+import { useGetAuthUser } from "@/lib/hooks/useGetAuthUser";
 import { cn, makeProfileImageUrl } from "@/lib/utils";
 import {
   CreateUserZodSchema,
@@ -62,7 +62,7 @@ type UserList = RouterOutputs["users"]["getAll"];
 
 const MembersSettingsPage: NextPage = () => {
   const router = useRouter();
-  const userQuery = api.auth.getUser.useQuery();
+  const userQuery = useGetAuthUser();
   const members = api.users.getAll.useQuery();
 
   const accountId = userQuery.data?.id || "";
