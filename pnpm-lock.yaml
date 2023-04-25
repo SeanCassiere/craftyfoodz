@@ -218,15 +218,15 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       drizzle-orm:
-        specifier: ^0.24.4
-        version: 0.24.4(@planetscale/database@1.7.0)
+        specifier: ^0.25.2
+        version: 0.25.2(@planetscale/database@1.7.0)
     devDependencies:
       dotenv-cli:
         specifier: ^7.2.1
         version: 7.2.1
       drizzle-kit:
-        specifier: 0.17.1-609a4f0
-        version: 0.17.1-609a4f0
+        specifier: 0.17.6-76e73f3
+        version: 0.17.6-76e73f3
       typescript:
         specifier: ^5.0.4
         version: 5.0.4
@@ -2196,8 +2196,8 @@ packages:
       wordwrap: 1.0.0
     dev: true
 
-  /drizzle-kit@0.17.1-609a4f0:
-    resolution: {integrity: sha512-bXflv8YQPe8gE+OSqllxVJEiwzupHjzu6tcBqfO4avrlspiP3shFJfDuHeiv+ztpKcG+8KXAuuFRIplJtD89LA==}
+  /drizzle-kit@0.17.6-76e73f3:
+    resolution: {integrity: sha512-HmsTYbm4Y3gfv2jlzRQ04mbepnP9eKHWWFPnzEInrVEJJ85k0hxldGpbql03flZPII4W0z5FwuGUC9ROOLhVNw==}
     hasBin: true
     dependencies:
       camelcase: 7.0.1
@@ -2214,8 +2214,8 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.24.4(@planetscale/database@1.7.0):
-    resolution: {integrity: sha512-mQzuqEHqc2NGN20ACc0NAaFaHlQlTZquoK42xJ8TRSntzAVz4iSDksozVJKBXig+qKgZA9C7KpWCDRo9+NMgng==}
+  /drizzle-orm@0.25.2(@planetscale/database@1.7.0):
+    resolution: {integrity: sha512-JdPTT4etUnWTbTLtnCSxAIqR3g+BJpeZdOdJsSz8y9uY53ABhAHmxNSFru3kuxlAQhuVaW9thS1iWizfdRjZ9g==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
