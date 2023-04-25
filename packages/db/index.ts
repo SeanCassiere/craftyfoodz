@@ -1,5 +1,5 @@
 import { connect } from "@planetscale/database";
-import * as Exps from "drizzle-orm/expressions";
+import * as SourceDrizzleExpressions from "drizzle-orm";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
 
 export function getDatabaseConnection({
@@ -11,5 +11,7 @@ export function getDatabaseConnection({
   return drizzle(connection, { logger: true });
 }
 
+const DrizzleExp = SourceDrizzleExpressions;
+
 export type DatabaseConnectionType = ReturnType<typeof getDatabaseConnection>;
-export { Exps };
+export { DrizzleExp };

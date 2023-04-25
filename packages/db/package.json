@@ -21,7 +21,7 @@
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.0",
     "@planetscale/database": "^1.7.0",
-    "drizzle-orm": "^0.24.4"
+    "drizzle-orm": "^0.25.2"
   },
   "devDependencies": {
     "dotenv-cli": "^7.2.1",
