@@ -159,7 +159,11 @@ const MemberList = (props: MemberListProps) => {
       </h4>
       <div className="flex flex-col divide-y px-1">
         {props.members.map((mem) => (
-          <MemberItem key={`member_${mem.id}`} member={mem} {...props} />
+          <MemberItem
+            key={`member_${mem.id}_${mem.updated_at.toString()}`}
+            member={mem}
+            {...props}
+          />
         ))}
         {props.members.length === 0 && (
           <div className="flex items-center justify-center p-2">
