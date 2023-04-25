@@ -225,8 +225,8 @@ importers:
         specifier: ^7.2.1
         version: 7.2.1
       drizzle-kit:
-        specifier: 0.17.1-609a4f0
-        version: 0.17.1-609a4f0
+        specifier: 0.17.6-76e73f3
+        version: 0.17.6-76e73f3
       typescript:
         specifier: ^5.0.4
         version: 5.0.4
@@ -2196,8 +2196,8 @@ packages:
       wordwrap: 1.0.0
     dev: true
 
-  /drizzle-kit@0.17.1-609a4f0:
-    resolution: {integrity: sha512-bXflv8YQPe8gE+OSqllxVJEiwzupHjzu6tcBqfO4avrlspiP3shFJfDuHeiv+ztpKcG+8KXAuuFRIplJtD89LA==}
+  /drizzle-kit@0.17.6-76e73f3:
+    resolution: {integrity: sha512-HmsTYbm4Y3gfv2jlzRQ04mbepnP9eKHWWFPnzEInrVEJJ85k0hxldGpbql03flZPII4W0z5FwuGUC9ROOLhVNw==}
     hasBin: true
     dependencies:
       camelcase: 7.0.1

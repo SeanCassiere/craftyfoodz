@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "dotenv-cli": "^7.2.1",
-    "drizzle-kit": "0.17.1-609a4f0",
+    "drizzle-kit": "0.17.6-76e73f3",
     "typescript": "^5.0.4"
   }
 }
