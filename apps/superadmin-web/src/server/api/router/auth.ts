@@ -3,8 +3,8 @@ import { serialize } from "cookie";
 
 import { DrizzleExp } from "@craftyfoodz/db";
 import {
-  SuperAdminAccount,
-  SuperAdminLoginAttempt,
+  superAdminAccount,
+  superAdminLoginAttempt,
 } from "@craftyfoodz/db/schema";
 import {
   generateDbId,
@@ -41,8 +41,8 @@ export const authRouter = createTRPCRouter({
 
     const users = await ctx.db
       .select()
-      .from(SuperAdminAccount)
-      .where(DrizzleExp.eq(SuperAdminAccount.id, accountId));
+      .from(superAdminAccount)
+      .where(DrizzleExp.eq(superAdminAccount.id, accountId));
 
     if (users.length === 0 || !users[0]) {
       throw new TRPCError({
@@ -59,9 +59,9 @@ export const authRouter = createTRPCRouter({
       const { accountId } = ctx.session;
 
       await ctx.db
-        .update(SuperAdminAccount)
+        .update(superAdminAccount)
         .set({ name: input.name })
-        .where(DrizzleExp.eq(SuperAdminAccount.id, accountId));
+        .where(DrizzleExp.eq(superAdminAccount.id, accountId));
 
       return { id: accountId, name: input.name };
     }),
@@ -70,9 +70,9 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const existingEmails = await ctx.db
         .select()
-        .from(SuperAdminAccount)
+        .from(superAdminAccount)
         .where(
-          DrizzleExp.eq(SuperAdminAccount.email, input.email.toLowerCase()),
+          DrizzleExp.eq(superAdminAccount.email, input.email.toLowerCase()),
         );
 
       if (existingEmails.length > 0 && existingEmails[0]) {
@@ -90,9 +90,9 @@ export const authRouter = createTRPCRouter({
       const { accountId } = ctx.session;
 
       await ctx.db
-        .update(SuperAdminAccount)
+        .update(superAdminAccount)
         .set({ email: input.email.toLowerCase() })
-        .where(DrizzleExp.eq(SuperAdminAccount.id, accountId));
+        .where(DrizzleExp.eq(superAdminAccount.id, accountId));
 
       return { id: accountId, email: input.email.toLowerCase() };
     }),
@@ -103,8 +103,8 @@ export const authRouter = createTRPCRouter({
       const lowerCaseEmail = email.toLowerCase();
       const users = await ctx.db
         .select()
-        .from(SuperAdminAccount)
-        .where(DrizzleExp.eq(SuperAdminAccount.email, lowerCaseEmail));
+        .from(superAdminAccount)
+        .where(DrizzleExp.eq(superAdminAccount.email, lowerCaseEmail));
 
       if (users.length === 0 || !users[0]) {
         await wait(2000);
@@ -123,7 +123,7 @@ export const authRouter = createTRPCRouter({
       const accessCode = generateSixDigitAccessCode();
 
       const loginAttemptId = generateDbId("sala");
-      await ctx.db.insert(SuperAdminLoginAttempt).values({
+      await ctx.db.insert(superAdminLoginAttempt).values({
         id: loginAttemptId,
         sa_account_id: user.id,
         access_code: accessCode,
@@ -155,8 +155,8 @@ export const authRouter = createTRPCRouter({
 
       const loginAttempts = await ctx.db
         .select()
-        .from(SuperAdminLoginAttempt)
-        .where(DrizzleExp.eq(SuperAdminLoginAttempt.id, identifier));
+        .from(superAdminLoginAttempt)
+        .where(DrizzleExp.eq(superAdminLoginAttempt.id, identifier));
 
       if (loginAttempts.length === 0 || !loginAttempts[0]) {
         await wait(1000);
@@ -170,8 +170,8 @@ export const authRouter = createTRPCRouter({
 
       const accounts = await ctx.db
         .select()
-        .from(SuperAdminAccount)
-        .where(DrizzleExp.eq(SuperAdminAccount.id, attempt.sa_account_id));
+        .from(superAdminAccount)
+        .where(DrizzleExp.eq(superAdminAccount.id, attempt.sa_account_id));
 
       if (accounts.length === 0 || !accounts[0]) {
         await wait(1000);
@@ -191,7 +191,7 @@ export const authRouter = createTRPCRouter({
 
       const account = accounts[0];
 
-      await ctx.db.update(SuperAdminLoginAttempt).set({ is_expired: true });
+      await ctx.db.update(superAdminLoginAttempt).set({ is_expired: true });
 
       const jwt = await generateJwt({
         accountId: account.id,

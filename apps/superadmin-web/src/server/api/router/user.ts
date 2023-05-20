@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { DrizzleExp } from "@craftyfoodz/db";
 import { SUPER_ADMIN_DEVELOPER_ROLE } from "@craftyfoodz/db/enums";
-import { SuperAdminAccount } from "@craftyfoodz/db/tables";
+import { superAdminAccount } from "@craftyfoodz/db/tables";
 import { generateDbId } from "@craftyfoodz/db/utils";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
@@ -16,16 +16,16 @@ export const userRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const { role } = ctx.session;
 
-    const query = ctx.db.select().from(SuperAdminAccount);
+    const query = ctx.db.select().from(superAdminAccount);
 
     if (role !== SUPER_ADMIN_DEVELOPER_ROLE) {
       query.where(
-        DrizzleExp.notInArray(SuperAdminAccount.role, [
+        DrizzleExp.notInArray(superAdminAccount.role, [
           SUPER_ADMIN_DEVELOPER_ROLE,
         ]),
       );
     }
-    query.orderBy(DrizzleExp.desc(SuperAdminAccount.created_at));
+    query.orderBy(DrizzleExp.desc(superAdminAccount.created_at));
 
     const result = await query.execute();
 
@@ -38,9 +38,9 @@ export const userRouter = createTRPCRouter({
 
       const existing = await ctx.db
         .select()
-        .from(SuperAdminAccount)
+        .from(superAdminAccount)
         .where(
-          DrizzleExp.eq(SuperAdminAccount.email, input.email.toLowerCase()),
+          DrizzleExp.eq(superAdminAccount.email, input.email.toLowerCase()),
         );
 
       if (existing.length > 0) {
@@ -50,7 +50,7 @@ export const userRouter = createTRPCRouter({
         });
       }
 
-      await ctx.db.insert(SuperAdminAccount).values({
+      await ctx.db.insert(superAdminAccount).values({
         id: generateDbId("saua"),
         name: input.name,
         email: input.email.toLowerCase(),
@@ -73,7 +73,7 @@ export const userRouter = createTRPCRouter({
         });
       }
 
-      const users = await ctx.db.select().from(SuperAdminAccount);
+      const users = await ctx.db.select().from(superAdminAccount);
 
       // check if other accounts are using the input email throw an error
       if (
@@ -89,13 +89,13 @@ export const userRouter = createTRPCRouter({
       }
 
       await ctx.db
-        .update(SuperAdminAccount)
+        .update(superAdminAccount)
         .set({
           name: input.name,
           email: input.email.toLowerCase(),
           ...(role === SUPER_ADMIN_DEVELOPER_ROLE ? { role: input.role } : {}),
         })
-        .where(DrizzleExp.eq(SuperAdminAccount.id, input.id));
+        .where(DrizzleExp.eq(superAdminAccount.id, input.id));
 
       return { success: true };
     }),
@@ -103,9 +103,9 @@ export const userRouter = createTRPCRouter({
     .input(z.object({ id: z.string(), currentStatus: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db
-        .update(SuperAdminAccount)
+        .update(superAdminAccount)
         .set({ is_active: !input.currentStatus })
-        .where(DrizzleExp.eq(SuperAdminAccount.id, input.id));
+        .where(DrizzleExp.eq(superAdminAccount.id, input.id));
       return { success: true, is_active: !input.currentStatus };
     }),
 });

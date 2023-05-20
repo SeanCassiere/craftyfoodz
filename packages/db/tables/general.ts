@@ -6,7 +6,7 @@ import {
   varchar,
 } from "drizzle-orm/mysql-core";
 
-export const GlobalFeatureTable = mysqlTable("global_features", {
+export const globalFeatures = mysqlTable("global_features", {
   id: varchar("id", { length: 255 }).primaryKey(),
   audience: mysqlEnum("audience", [
     "super_admin",
