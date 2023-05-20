@@ -36,12 +36,12 @@ export const userRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { role } = ctx.session;
 
-      const existing = await ctx.db
-        .select()
-        .from(superAdminAccount)
-        .where(
-          DrizzleExp.eq(superAdminAccount.email, input.email.toLowerCase()),
-        );
+      const existing = await ctx.db.query.superAdminAccount.findMany({
+        where: DrizzleExp.eq(
+          superAdminAccount.email,
+          input.email.toLowerCase(),
+        ),
+      });
 
       if (existing.length > 0) {
         throw new TRPCError({
@@ -73,7 +73,7 @@ export const userRouter = createTRPCRouter({
         });
       }
 
-      const users = await ctx.db.select().from(superAdminAccount);
+      const users = await ctx.db.query.superAdminAccount.findMany();
 
       // check if other accounts are using the input email throw an error
       if (

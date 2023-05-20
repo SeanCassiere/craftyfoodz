@@ -39,19 +39,18 @@ export const authRouter = createTRPCRouter({
   getUser: protectedProcedure.query(async ({ ctx }) => {
     const { accountId } = ctx.session;
 
-    const users = await ctx.db
-      .select()
-      .from(superAdminAccount)
-      .where(DrizzleExp.eq(superAdminAccount.id, accountId));
+    const user = await ctx.db.query.superAdminAccount.findFirst({
+      where: DrizzleExp.eq(superAdminAccount.id, accountId),
+    });
 
-    if (users.length === 0 || !users[0]) {
+    if (!user) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "User not found",
       });
     }
 
-    return users[0];
+    return user;
   }),
   updateName: protectedProcedure
     .input(UpdateUserNameZodSchema)
@@ -68,12 +67,12 @@ export const authRouter = createTRPCRouter({
   updateEmail: protectedProcedure
     .input(UpdateUserEmailZodSchema)
     .mutation(async ({ ctx, input }) => {
-      const existingEmails = await ctx.db
-        .select()
-        .from(superAdminAccount)
-        .where(
-          DrizzleExp.eq(superAdminAccount.email, input.email.toLowerCase()),
-        );
+      const existingEmails = await ctx.db.query.superAdminAccount.findMany({
+        where: DrizzleExp.eq(
+          superAdminAccount.email,
+          input.email.toLowerCase(),
+        ),
+      });
 
       if (existingEmails.length > 0 && existingEmails[0]) {
         if (existingEmails[0]) {
@@ -101,17 +100,14 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { email } = input;
       const lowerCaseEmail = email.toLowerCase();
-      const users = await ctx.db
-        .select()
-        .from(superAdminAccount)
-        .where(DrizzleExp.eq(superAdminAccount.email, lowerCaseEmail));
+      const user = await ctx.db.query.superAdminAccount.findFirst({
+        where: DrizzleExp.eq(superAdminAccount.email, lowerCaseEmail),
+      });
 
-      if (users.length === 0 || !users[0]) {
+      if (!user) {
         await wait(2000);
         return { identifier: ID_NO_USER };
       }
-
-      const user = users[0];
 
       if (!user.is_active) {
         throw new TRPCError({
@@ -153,43 +149,25 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { identifier, accessCode } = input;
 
-      const loginAttempts = await ctx.db
-        .select()
-        .from(superAdminLoginAttempt)
-        .where(DrizzleExp.eq(superAdminLoginAttempt.id, identifier));
+      const attempt = await ctx.db.query.superAdminLoginAttempt.findFirst({
+        where: DrizzleExp.eq(superAdminLoginAttempt.id, identifier),
+        with: {
+          superAdminAccount: true,
+        },
+      });
 
-      if (loginAttempts.length === 0 || !loginAttempts[0]) {
+      if (
+        !attempt ||
+        attempt.access_code !== accessCode ||
+        attempt.is_expired
+      ) {
         await wait(1000);
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Access code is invalid or expired",
         });
       }
-
-      const attempt = loginAttempts[0];
-
-      const accounts = await ctx.db
-        .select()
-        .from(superAdminAccount)
-        .where(DrizzleExp.eq(superAdminAccount.id, attempt.sa_account_id));
-
-      if (accounts.length === 0 || !accounts[0]) {
-        await wait(1000);
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Access code is invalid or expired",
-        });
-      }
-
-      if (attempt.access_code !== accessCode || attempt.is_expired) {
-        await wait(1000);
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Access code is invalid or expired",
-        });
-      }
-
-      const account = accounts[0];
+      const account = attempt.superAdminAccount;
 
       await ctx.db.update(superAdminLoginAttempt).set({ is_expired: true });
 

@@ -1,2 +1,2 @@
-export { globalFeatures } from "./general";
-export { superAdminAccount, superAdminLoginAttempt } from "./super-admin";
+export * from "./general";
+export * from "./super-admin";
