@@ -30,8 +30,6 @@ import {
   UpdateUserNameZodSchema,
 } from "@/server/validation/user";
 
-const ID_NO_USER = "no-user";
-
 export const authRouter = createTRPCRouter({
   getSession: publicProcedure.query(({ ctx }) => {
     return ctx.session;
@@ -99,6 +97,8 @@ export const authRouter = createTRPCRouter({
     .input(EmailLoginZodSchema)
     .mutation(async ({ ctx, input }) => {
       const { email } = input;
+      const loginAttemptId = generateDbId("sala");
+
       const lowerCaseEmail = email.toLowerCase();
       const user = await ctx.db.query.superAdminAccount.findFirst({
         where: DrizzleExp.eq(superAdminAccount.email, lowerCaseEmail),
@@ -106,7 +106,7 @@ export const authRouter = createTRPCRouter({
 
       if (!user) {
         await wait(2000);
-        return { identifier: ID_NO_USER };
+        return { identifier: loginAttemptId };
       }
 
       if (!user.is_active) {
@@ -118,7 +118,6 @@ export const authRouter = createTRPCRouter({
 
       const accessCode = generateSixDigitAccessCode();
 
-      const loginAttemptId = generateDbId("sala");
       await ctx.db.insert(superAdminLoginAttempt).values({
         id: loginAttemptId,
         sa_account_id: user.id,
