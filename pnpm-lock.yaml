@@ -218,15 +218,15 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       drizzle-orm:
-        specifier: ^0.25.2
-        version: 0.25.2(@planetscale/database@1.7.0)
+        specifier: ^0.26.0
+        version: 0.26.0(@planetscale/database@1.7.0)
     devDependencies:
       dotenv-cli:
         specifier: ^7.2.1
         version: 7.2.1
       drizzle-kit:
-        specifier: 0.17.6-76e73f3
-        version: 0.17.6-76e73f3
+        specifier: 0.18.0-27440c3
+        version: 0.18.0-27440c3
       typescript:
         specifier: ^5.0.4
         version: 5.0.4
@@ -2233,8 +2233,8 @@ packages:
       wordwrap: 1.0.0
     dev: true
 
-  /drizzle-kit@0.17.6-76e73f3:
-    resolution: {integrity: sha512-HmsTYbm4Y3gfv2jlzRQ04mbepnP9eKHWWFPnzEInrVEJJ85k0hxldGpbql03flZPII4W0z5FwuGUC9ROOLhVNw==}
+  /drizzle-kit@0.18.0-27440c3:
+    resolution: {integrity: sha512-8pk3cSZsKGvymRm7z00jswiSV5rSs4s3QUNjKXjcPTMti2m8A7nH/CNejCLtd7ChSNmVQ07Oka1WyNkyizX0Og==}
     hasBin: true
     dependencies:
       camelcase: 7.0.1
@@ -2251,8 +2251,8 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.25.2(@planetscale/database@1.7.0):
-    resolution: {integrity: sha512-JdPTT4etUnWTbTLtnCSxAIqR3g+BJpeZdOdJsSz8y9uY53ABhAHmxNSFru3kuxlAQhuVaW9thS1iWizfdRjZ9g==}
+  /drizzle-orm@0.26.0(@planetscale/database@1.7.0):
+    resolution: {integrity: sha512-ztjhHehcuG5+lpGYxfT/L5I+yd/Z0dOf0fV3cS2ywBU01wkpxjwl4EJZVT7kVzjYfM8kwMGDghAPRPBCK0vULA==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
@@ -2262,6 +2262,7 @@ packages:
       '@types/better-sqlite3': '*'
       '@types/pg': '*'
       '@types/sql.js': '*'
+      '@vercel/postgres': '*'
       better-sqlite3: '>=7'
       bun-types: '*'
       knex: '*'
@@ -2287,6 +2288,8 @@ packages:
       '@types/pg':
         optional: true
       '@types/sql.js':
+        optional: true
+      '@vercel/postgres':
         optional: true
       better-sqlite3:
         optional: true
