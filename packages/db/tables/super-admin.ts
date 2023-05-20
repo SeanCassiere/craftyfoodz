@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -9,7 +10,7 @@ import {
 
 import { SUPER_ADMIN_ROLES } from "../enums";
 
-export const SuperAdminAccount = mysqlTable("sa_accounts", {
+export const superAdminAccount = mysqlTable("sa_accounts", {
   id: varchar("id", { length: 20 }).primaryKey(),
   email: varchar("email", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -19,7 +20,14 @@ export const SuperAdminAccount = mysqlTable("sa_accounts", {
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const SuperAdminLoginAttempt = mysqlTable(
+export const superAdminAccountRelations = relations(
+  superAdminAccount,
+  ({ many }) => ({
+    loginAttempts: many(superAdminLoginAttempt),
+  }),
+);
+
+export const superAdminLoginAttempt = mysqlTable(
   "sa_login_attempts",
   {
     id: varchar("id", { length: 20 }).primaryKey(),
@@ -33,5 +41,15 @@ export const SuperAdminLoginAttempt = mysqlTable(
     sa_account_id_idx: index("sa_account_id_idx").on(
       loginAttempt.sa_account_id,
     ),
+  }),
+);
+
+export const superAdminLoginAttemptRelations = relations(
+  superAdminLoginAttempt,
+  ({ one }) => ({
+    superAdminAccount: one(superAdminAccount, {
+      fields: [superAdminLoginAttempt.sa_account_id],
+      references: [superAdminAccount.id],
+    }),
   }),
 );

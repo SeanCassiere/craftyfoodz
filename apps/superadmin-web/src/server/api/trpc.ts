@@ -4,7 +4,8 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { getDatabaseConnection } from "@craftyfoodz/db";
+import { connect, drizzle } from "@craftyfoodz/db";
+import * as tableSchemas from "@craftyfoodz/db/tables";
 
 import { verifyJwt } from "@/lib/utils/jwt";
 import { env } from "@/env.mjs";
@@ -15,11 +16,17 @@ type CreateContextOptions = {
   req: NextApiRequest;
   res: NextApiResponse;
 };
+const planetscaleConnect = connect({ url: env.DATABASE_URL });
+const drizzleDb = drizzle(planetscaleConnect, {
+  logger: true,
+  schema: tableSchemas,
+});
+export type DatabaseConnection = typeof drizzleDb;
 
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
-    db: getDatabaseConnection({ connectionString: env.DATABASE_URL }),
+    db: drizzleDb,
     res: opts.res,
     req: opts.req,
   };

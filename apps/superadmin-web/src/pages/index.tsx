@@ -10,7 +10,6 @@ import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 
 import { api } from "@/lib/utils/api";
@@ -26,33 +25,47 @@ import {
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const [identifier, setIdentifier] = React.useState("");
-  const [stage, setStage] = React.useState<"email" | "access_code">("email");
+
+  const redirectUrl = React.useMemo(
+    () =>
+      router.query.redirect_url && typeof router.query.redirect_url === "string"
+        ? router.query.redirect_url
+        : "",
+    [router.query, router.isReady],
+  );
+
+  const identifier = React.useMemo(
+    () =>
+      router.query.login_attempt &&
+      typeof router.query.login_attempt === "string"
+        ? router.query.login_attempt
+        : "",
+    [router.query, router.isReady],
+  );
+
+  const stage: "email" | "access_code" = identifier ? "access_code" : "email";
 
   const handleLoginStageOneComplete = (id: string) => {
-    setIdentifier(id);
-    setStage("access_code");
+    router.push(
+      "?login_attempt=" +
+        id +
+        (redirectUrl ? "&redirect_url=" + redirectUrl : ""),
+      undefined,
+      { shallow: true },
+    );
   };
 
   const handleLoginStageTwoComplete = () => {
-    const redirect = router.query.redirect_url;
-
-    if (!redirect) {
-      router.push("/restaurants");
+    if (!redirectUrl) {
+      router.push(redirectUrl);
+      return;
     }
 
-    if (Array.isArray(redirect) && redirect.length && redirect[0]) {
-      router.push(redirect[0]);
-    }
-
-    if (typeof redirect === "string") {
-      router.push(redirect);
-    }
+    router.push("/restaurants");
   };
 
   const handleReset = () => {
-    setIdentifier("");
-    setStage("email");
+    router.push("/");
   };
 
   return (
