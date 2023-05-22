@@ -2,8 +2,8 @@
   "$schema": "https://turborepo.org/schema.json",
   "globalDependencies": ["**/.env"],
   "pipeline": {
-    "db:seed": {
-      "inputs": ["seed.ts"],
+    "db:seed:admin": {
+      "inputs": ["seed-admin.ts"],
       "cache": false
     },
     "db:push": {

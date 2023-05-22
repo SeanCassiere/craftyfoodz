@@ -15,7 +15,7 @@
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "db:push": "pnpm with-env drizzle-kit push:mysql",
-    "db:seed": "pnpm with-env node seed.js",
+    "db:seed:admin": "pnpm with-env tsx seed-admin.ts",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
@@ -26,6 +26,7 @@
   "devDependencies": {
     "dotenv-cli": "^7.2.1",
     "drizzle-kit": "0.18.0-27440c3",
+    "tsx": "^3.12.7",
     "typescript": "^5.0.4"
   }
 }
